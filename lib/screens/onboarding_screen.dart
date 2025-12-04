@@ -32,7 +32,7 @@ class OnboardingScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 100),
+            const SizedBox(height: 150),
 
             // Icon
             const Icon(
