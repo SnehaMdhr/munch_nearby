@@ -18,11 +18,11 @@ class SplashScreen extends StatelessWidget {
       });
     });
     return Scaffold(
-        body: SizedBox.expand(
+      body: SizedBox.expand(
         child: Image.asset(
-        "assets/images/logo.png",
-        fit: BoxFit.cover,
-    ),),
+          "assets/images/logo.png",
+          fit: BoxFit.cover,
+        ),),
     );
   }
 }
