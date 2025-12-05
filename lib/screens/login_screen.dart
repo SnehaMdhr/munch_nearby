@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munch_nearby/screens/forget_password_screen.dart';
+import 'package:munch_nearby/screens/home_screen.dart';
 import 'package:munch_nearby/screens/register_screen.dart';
 
 import '../widgets/my_button.dart';
@@ -105,11 +106,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 MyButton(
                   text: "Login",
-                  onPressed: () {
+                  onPressed: (
+
+                      ) {
                     if (_formKey.currentState!.validate()) {
                       print("Email: ${emailController.text}");
                       print("Password: ${passwordController.text}");
                     }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
                   },
                 ),
 
