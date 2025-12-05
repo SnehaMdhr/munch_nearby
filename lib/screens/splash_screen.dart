@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/screens/onboarding_screen.dart';
 
 
 
@@ -9,7 +10,10 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 5), () {
-        Navigator.pushReplacementNamed(context, "/onboarding");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OnboardingScreen()),
+        );
       });
     });
     return Scaffold(
