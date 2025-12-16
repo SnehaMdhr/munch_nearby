@@ -34,8 +34,8 @@ class _BottomNavigationBarForCustomerState extends State<BottomNavigationBarForC
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: "Profile")
         ],
 
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Color(0xFFEE7C2B),
+        unselectedItemColor: Color(0xFF64748B),
         currentIndex: _selectedIndex,
         onTap: (index){
           setState(() {
