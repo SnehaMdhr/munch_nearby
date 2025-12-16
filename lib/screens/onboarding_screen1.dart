@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:munch_nearby/screens/login_screen.dart';
 import 'package:munch_nearby/screens/onboarding_screen2.dart';
 import '../widgets/my_button.dart';
+import '../widgets/page_dot.dart';
 
 
 class OnboardingScreen1 extends StatelessWidget {
@@ -74,9 +75,9 @@ class OnboardingScreen1 extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _dot(false),
-                _dot(true),
-                _dot(false),
+                const PageDot(active: false),
+                const PageDot(active: true),
+                const PageDot(active: false),
               ],
             ),
 
@@ -93,20 +94,6 @@ class OnboardingScreen1 extends StatelessWidget {
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-
-// Small dot widget
-  Widget _dot(bool active) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        color: active ? Color(0xFFE87A5D): Colors.grey.shade300,
-        shape: BoxShape.circle,
       ),
     );
   }
