@@ -4,6 +4,8 @@ import 'package:munch_nearby/screens/bottom_screen_customer/home_screen.dart';
 import 'package:munch_nearby/screens/bottom_screen_customer/map_screen.dart';
 import 'package:munch_nearby/screens/bottom_screen_customer/profile_screen.dart';
 
+import '../widgets/app_bar_title.dart';
+
 class BottomNavigationBarForCustomer extends StatefulWidget {
   const BottomNavigationBarForCustomer({super.key});
 
@@ -23,7 +25,10 @@ class _BottomNavigationBarForCustomerState extends State<BottomNavigationBarForC
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const AppBarTitle(name: "Sneha"),
+      ),
       body: lstBottomScreen[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
