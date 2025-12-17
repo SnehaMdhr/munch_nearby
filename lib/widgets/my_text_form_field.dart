@@ -26,38 +26,6 @@ class MyTextFormField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       obscureText: obscureText,
-
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
-
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-        suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
-
-        filled: true,
-        fillColor: const Color(0xFFFEFBF8),
-
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: Color(0xFFEAE3E0),
-            width: 1.4,
-          ),
-        ),
-
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: Color(0xFFE87A5D),
-            width: 1.8,
-          ),
-        ),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-
       validator: validator ??
               (value) {
             if (value == null || value.isEmpty) {
@@ -65,6 +33,12 @@ class MyTextFormField extends StatelessWidget {
             }
             return null;
           },
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+        suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
+      ),
     );
   }
 }
+
