@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/widgets/top_search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,9 +7,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
-      child: Center(
-        child: Text("Home screen"),
-      ),
+      child: SafeArea(child: SingleChildScrollView(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TopSearchBar()
+            ]
+        ),
+      ))
     );
   }
 }

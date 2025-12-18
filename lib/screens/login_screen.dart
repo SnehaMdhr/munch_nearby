@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:munch_nearby/screens/bottom_navigation_bar_for_customer.dart';
 import 'package:munch_nearby/screens/bottom_navigation_bar_for_restaurant.dart';
 import 'package:munch_nearby/screens/forget_password_screen.dart';
-import 'package:munch_nearby/screens/home_screen.dart';
+
 import 'package:munch_nearby/screens/register_screen.dart';
 
 import '../widgets/my_button.dart';
