@@ -39,7 +39,7 @@ class _BottomNavigationBarForRestaurantState extends State<BottomNavigationBarFo
           BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: "Menu"),
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: "Profile")
         ],
-
+        backgroundColor: Colors.white,
         selectedItemColor: Color(0xFFEE7C2B),
         unselectedItemColor: Color(0xFF64748B),
         currentIndex: _selectedIndex,
