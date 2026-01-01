@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/login_screen.dart';
-import 'package:munch_nearby/screens/onboarding_screen2.dart';
-import '../widgets/my_button.dart';
+import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
+import 'package:munch_nearby/features/onboarding/presentation/pages/onboarding_screen2.dart';
+import '../../../../core/widgets/my_button.dart';
 import '../widgets/page_dot.dart';
 
 

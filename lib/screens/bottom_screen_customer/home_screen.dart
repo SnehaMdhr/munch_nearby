@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/widgets/top_search_bar.dart';
+import 'package:munch_nearby/core/widgets/top_search_bar.dart';
 
-import '../../widgets/restaurant_card.dart';
+import '../../core/widgets/restaurant_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

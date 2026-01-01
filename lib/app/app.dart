@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/splash_screen.dart';
-import 'package:munch_nearby/theme/theme_data.dart';
+import 'package:munch_nearby/app/theme/theme_data.dart';
+import 'package:munch_nearby/features/splash/presentation/pages/splash_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

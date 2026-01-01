@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/login_screen.dart';
-import 'package:munch_nearby/screens/onboarding_screen1.dart';
-import '../widgets/my_button.dart';
-import '../widgets/page_dot.dart';
+import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
+import 'package:munch_nearby/features/onboarding/presentation/widgets/page_dot.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
+import '../../../../core/widgets/my_button.dart';
+
+
+class OnboardingScreen2 extends StatelessWidget {
+  const OnboardingScreen2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class OnboardingScreen extends StatelessWidget {
 
             // Icon
             const Icon(
-              Icons.restaurant_menu,
+              Icons.message_sharp,
               size: 80,
               color: Color(0xFFE87A5D),
             ),
@@ -45,7 +46,7 @@ class OnboardingScreen extends StatelessWidget {
 
             // Title
             const Text(
-              "Discover delicious\nfood nearby.",
+              "Share your Taste, Shape\nYour future",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 26,
@@ -59,8 +60,7 @@ class OnboardingScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: const Text(
-                "MunchNearby helps you easily find the best local restaurants, "
-                    "from hidden gems to popular favorites.",
+                "Your reviews power our recommendations. The more you share, the better we can tailor suggestions just for you and help the community",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -75,9 +75,9 @@ class OnboardingScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const PageDot(active: false),
+                const PageDot(active: false),
                 const PageDot(active: true),
-                const PageDot(active: false),
-                const PageDot(active: false),
               ],
             ),
 
@@ -87,9 +87,9 @@ class OnboardingScreen extends StatelessWidget {
             MyButton(onPressed: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OnboardingScreen1()),
+                MaterialPageRoute(builder: (context) => LoginScreen()),
               );
-            }, text: "Next"),
+            }, text: "Get Started"),
 
             const SizedBox(height: 20),
           ],
@@ -98,3 +98,4 @@ class OnboardingScreen extends StatelessWidget {
     );
   }
 }
+

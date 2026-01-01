@@ -11,7 +11,7 @@ class AppBarTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(width: 12,),
-        Container(
+        SizedBox(
           height: 60,
           child: Image.asset(
             'assets/images/nobg_logo.png',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/my_button.dart';
-import '../widgets/my_text_form_field.dart';
-import 'login_screen.dart';
+import 'package:munch_nearby/core/widgets/my_button.dart';
+import 'package:munch_nearby/core/widgets/my_text_form_field.dart';
+import '../features/auth/presentation/pages/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

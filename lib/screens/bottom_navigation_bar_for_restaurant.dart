@@ -4,7 +4,7 @@ import 'package:munch_nearby/screens/bottom_screen_restaurant_owner/menu_screen.
 import 'package:munch_nearby/screens/bottom_screen_restaurant_owner/profile_screen_retaurant.dart';
 import 'package:munch_nearby/screens/bottom_screen_restaurant_owner/review_screen.dart';
 
-import '../widgets/app_bar_title.dart';
+import '../core/widgets/app_bar_title.dart';
 
 class BottomNavigationBarForRestaurant extends StatefulWidget {
   const BottomNavigationBarForRestaurant({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:munch_nearby/app.dart';
+import 'package:munch_nearby/app/app.dart';
 
 void main(){
   runApp(App());

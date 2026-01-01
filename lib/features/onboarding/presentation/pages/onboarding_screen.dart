@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/login_screen.dart';
-import 'package:munch_nearby/widgets/page_dot.dart';
+import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
+import 'package:munch_nearby/features/onboarding/presentation/pages/onboarding_screen1.dart';
+import '../../../../core/widgets/my_button.dart';
+import '../widgets/page_dot.dart';
 
-import '../widgets/my_button.dart';
-
-
-class OnboardingScreen2 extends StatelessWidget {
-  const OnboardingScreen2({super.key});
+class OnboardingScreen extends StatelessWidget {
+  const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class OnboardingScreen2 extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );;
+                  );
                 },
                 child: const Text(
                   "Skip",
@@ -37,7 +36,7 @@ class OnboardingScreen2 extends StatelessWidget {
 
             // Icon
             const Icon(
-              Icons.message_sharp,
+              Icons.restaurant_menu,
               size: 80,
               color: Color(0xFFE87A5D),
             ),
@@ -46,7 +45,7 @@ class OnboardingScreen2 extends StatelessWidget {
 
             // Title
             const Text(
-              "Share your Taste, Shape\nYour future",
+              "Discover delicious\nfood nearby.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 26,
@@ -60,7 +59,8 @@ class OnboardingScreen2 extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: const Text(
-                "Your reviews power our recommendations. The more you share, the better we can tailor suggestions just for you and help the community",
+                "MunchNearby helps you easily find the best local restaurants, "
+                    "from hidden gems to popular favorites.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -75,9 +75,9 @@ class OnboardingScreen2 extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const PageDot(active: false),
-                const PageDot(active: false),
                 const PageDot(active: true),
+                const PageDot(active: false),
+                const PageDot(active: false),
               ],
             ),
 
@@ -87,9 +87,9 @@ class OnboardingScreen2 extends StatelessWidget {
             MyButton(onPressed: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => OnboardingScreen1()),
               );
-            }, text: "Get Started"),
+            }, text: "Next"),
 
             const SizedBox(height: 20),
           ],
@@ -98,4 +98,3 @@ class OnboardingScreen2 extends StatelessWidget {
     );
   }
 }
-

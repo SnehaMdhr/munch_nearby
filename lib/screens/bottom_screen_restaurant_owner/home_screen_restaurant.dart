@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/widgets/dashboard_card.dart';
+import 'package:munch_nearby/core/widgets/dashboard_card.dart';
 
 class HomeScreenRestaurant extends StatelessWidget {
   const HomeScreenRestaurant({super.key});

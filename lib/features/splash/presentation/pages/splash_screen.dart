@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/onboarding_screen.dart';
+import 'package:munch_nearby/features/onboarding/presentation/pages/onboarding_screen.dart';
 
 
 
