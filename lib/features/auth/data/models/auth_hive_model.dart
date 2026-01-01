@@ -17,7 +17,7 @@ class AuthHiveModel extends HiveObject {
   final String email;
 
   @HiveField(3)
-  final UserRole role;
+  final String role;
 
   @HiveField(4)
   final String? password;

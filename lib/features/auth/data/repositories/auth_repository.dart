@@ -19,21 +19,15 @@ class AuthRepository implements IAuthRepository{
 
   @override
   Future<Either<Failure, AuthEntity>> login(String email, String password) async {
-    try {
+    try{
       final user = await _authDatasource.login(email, password);
-
-      if (user != null) {
-        return Right(user.toEntity());
+      if(user !=null){
+        final entity = user.toEntity();
+        return Right(entity);
       }
-
-      return Left(
-        LocalDatabaseFailure(message: "Invalid email or password"),
-      );
-    } catch (e) {
-      final msg = e.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
-      return Left(
-        LocalDatabaseFailure(message: msg),
-      );
+      return Left(LocalDatabaseFailure(message: "Invalid email or password"));
+    }catch(e){
+      return Left(LocalDatabaseFailure(message: e.toString()));
     }
   }
 

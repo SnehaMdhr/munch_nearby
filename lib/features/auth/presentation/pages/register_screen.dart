@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:munch_nearby/core/widgets/my_button.dart';
-import 'package:munch_nearby/core/widgets/my_text_form_field.dart';
-import 'package:munch_nearby/features/auth/domain/entities/auth_entity.dart';
-
-import '../../../../core/utils/snackbar_utils.dart';
+import '../../../../core/widgets/my_button.dart';
+import '../../../../core/widgets/my_text_form_field.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import 'login_screen.dart';
-
+import '../../../../core/utils/snackbar_utils.dart';
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -24,19 +21,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  String selectedRole = "Customer";
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.dispose();
-  }
+  final List<String> roles = ["Customer", "Restaurant Owner"];
+  String? selectedRole;
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
+
+    // Listen for auth state changes
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
@@ -48,10 +40,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           context,
           "Registration successful",
         );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
       }
     });
-
-    final authState = ref.watch(authViewModelProvider);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -62,7 +56,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 const SizedBox(height: 100),
+
+                // Title
                 const Center(
                   child: Text(
                     "MunchNearby",
@@ -73,7 +70,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 10),
+
                 const Center(
                   child: Text(
                     "Create your Account",
@@ -83,106 +82,123 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 40),
+
+                // Name Field
                 MyTextFormField(
                   label: "Name",
                   controller: nameController,
                   prefixIcon: Icons.person_2_outlined,
-                  onChanged: (value) {},
                   validator: (value) {
                     if (value!.isEmpty) return "Enter your name";
                     return null;
                   },
+                  onChanged: (_) {},
                 ),
+
                 const SizedBox(height: 20),
+
+                // Email Field
                 MyTextFormField(
                   label: "Email",
                   controller: emailController,
                   prefixIcon: Icons.email_outlined,
-                  onChanged: (value) {},
                   validator: (value) {
                     if (value!.isEmpty) return "Enter your email";
                     return null;
                   },
+                  onChanged: (_) {},
                 ),
+
                 const SizedBox(height: 20),
-                const Text(
-                  "Role:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+
+                // Role Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedRole,
+                  decoration: const InputDecoration(
+                    labelText: 'Select Role',
+                    hintText: 'Choose your role',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
                   ),
+                  items: roles.map((role) {
+                    return DropdownMenuItem<String>(
+                      value: role,
+                      child: Text(role),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedRole = value;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select your role';
+                    }
+                    return null;
+                  },
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Radio(
-                      value: "Customer",
-                      groupValue: selectedRole,
-                      activeColor: Color(0xFFE87A5D),
-                      onChanged: (value) {
-                        setState(() => selectedRole = value!);
-                      },
-                    ),
-                    const Text("Customer"),
-                    const SizedBox(width: 25),
-                    Radio(
-                      value: "Restaurant Owner",
-                      groupValue: selectedRole,
-                      activeColor: Color(0xFFE87A5D),
-                      onChanged: (value) {
-                        setState(() => selectedRole = value!);
-                      },
-                    ),
-                    const Text("Restaurant Owner"),
-                  ],
-                ),
-                const SizedBox(height: 10),
+
+                const SizedBox(height: 20),
+
+                // Password Field
                 MyTextFormField(
                   label: "Password",
                   controller: passwordController,
                   prefixIcon: Icons.lock_outline,
                   suffixIcon: Icons.visibility_off_outlined,
                   obscureText: true,
-                  onChanged: (value) {},
                   validator: (value) {
                     if (value!.isEmpty) return "Enter your password";
                     if (value.length < 6) return "Password must be at least 6 characters";
                     return null;
                   },
+                  onChanged: (_) {},
                 ),
+
                 const SizedBox(height: 20),
+
+                // Confirm Password
                 MyTextFormField(
                   label: "Confirm Password",
                   controller: confirmPasswordController,
                   prefixIcon: Icons.lock_outline,
                   suffixIcon: Icons.visibility_off_outlined,
                   obscureText: true,
-                  onChanged: (value) {},
                   validator: (value) {
                     if (value!.isEmpty) return "Re-enter your password";
                     if (value != passwordController.text) return "Passwords do not match";
                     return null;
                   },
+                  onChanged: (_) {},
                 ),
+
                 const SizedBox(height: 30),
+
+                // Register Button
                 MyButton(
                   text: "Register",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       ref.read(authViewModelProvider.notifier).register(
-                        name: nameController.text.trim(),
-                        email: emailController.text.trim(),
+                        name: nameController.text,
+                        email: emailController.text,
                         username: emailController.text.trim().split("@").first,
                         password: passwordController.text,
-                        role: selectedRole == "Customer"
-                            ? UserRole.customer
-                            : UserRole.restaurantOwner,
+                        role: selectedRole!,
                       );
                     }
                   },
                 ),
+
+
                 const SizedBox(height: 25),
+
+                // Divider
                 Row(
                   children: const [
                     Expanded(child: Divider()),
@@ -193,19 +209,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(child: Divider()),
                   ],
                 ),
+
                 const SizedBox(height: 20),
+
+                // Google Sign-in Button
                 Center(
                   child: InkWell(
-                    onTap: () {
-                      // TODO: Implement Google sign-in
-                    },
+                    onTap: () {},
                     child: Image.asset(
                       "assets/images/google.png",
                       width: 55,
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 25),
+
+                // Already have account? Login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -227,6 +247,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ],
                 ),
+
               ],
             ),
           ),

@@ -12,7 +12,7 @@ class RegisterUsecaseParams extends Equatable {
 
   final String name;
   final String email;
-  final UserRole role;
+  final String role;
   final String? username;
   final String password;
 

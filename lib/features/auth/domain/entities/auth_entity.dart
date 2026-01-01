@@ -1,15 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-enum UserRole {
-  customer,
-  restaurantOwner,
-}
 
 class AuthEntity extends Equatable {
   final String? userId;
   final String name;
   final String email;
-  final UserRole role;
+  final String role;
   final String? password;
   final String? username;
   final String? profilePicture;
