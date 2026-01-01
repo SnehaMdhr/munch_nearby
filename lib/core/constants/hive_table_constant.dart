@@ -1,5 +1,5 @@
-class HiveTableConstraint {
-  HiveTableConstraint._();
+class HiveTableConstant {
+  HiveTableConstant._();
 
   static const String dbName = "munch_nearby";
 
