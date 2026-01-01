@@ -1,11 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/hive_table_constant.dart';
 import '../../domain/entities/auth_entity.dart';
-
 part 'auth_hive_model.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: HiveTableConstant.userTypeId)
 class AuthHiveModel extends HiveObject {
   @HiveField(0)
   final String userId;
