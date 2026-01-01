@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
 import 'package:munch_nearby/screens/bottom_navigation_bar_for_customer.dart';
 import 'package:munch_nearby/screens/bottom_navigation_bar_for_restaurant.dart';
 import 'package:munch_nearby/screens/forget_password_screen.dart';
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => BottomNavigationBarForRestaurant()),
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
                         );
                       },
                       child: const Text(

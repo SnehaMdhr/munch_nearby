@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:munch_nearby/core/widgets/my_button.dart';
 import 'package:munch_nearby/core/widgets/my_text_form_field.dart';
-import '../features/auth/presentation/pages/login_screen.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,7 +12,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -58,6 +58,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
 
                 const SizedBox(height: 40),
+
+                MyTextFormField(
+                  label: "Name",
+                  controller: nameController,
+                  prefixIcon: Icons.person_2_outlined,
+                  onChanged: (value) {},
+                  validator: (value) {
+                    if (value!.isEmpty) return "Enter your name";
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
 
                 // Email Field
                 MyTextFormField(
