@@ -17,7 +17,7 @@ class AuthHiveModel extends HiveObject {
   final String email;
 
   @HiveField(3)
-  final String role;
+  final UserRole role;
 
   @HiveField(4)
   final String? password;
@@ -44,7 +44,7 @@ class AuthHiveModel extends HiveObject {
       userId: entity.userId,
       name: entity.name,
       email: entity.email,
-      role: entity.role.name,
+      role: entity.role,
       password: entity.password,
       username: entity.username,
       profilePicture: entity.profilePicture,
@@ -57,7 +57,7 @@ class AuthHiveModel extends HiveObject {
       userId: userId,
       name: name,
       email: email,
-      role: UserRole.values.byName(role),
+      role: role,
       password: password,
       username: username,
       profilePicture: profilePicture,
