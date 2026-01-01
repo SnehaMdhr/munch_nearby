@@ -1,26 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/widgets/my_button.dart';
 import 'package:munch_nearby/core/widgets/my_text_form_field.dart';
+import 'package:munch_nearby/features/auth/domain/entities/auth_entity.dart';
+
+import '../../../../core/utils/snackbar_utils.dart';
+import '../state/auth_state.dart';
+import '../view_model/auth_view_model.dart';
 import 'login_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  String selectedRole = "Customer"; // default role
+  String selectedRole = "Customer";
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      if (next.status == AuthStatus.error) {
+        SnackbarUtils.showError(
+          context,
+          next.errorMessage ?? "Registration failed",
+        );
+      } else if (next.status == AuthStatus.registered) {
+        SnackbarUtils.showSuccess(
+          context,
+          "Registration successful",
+        );
+      }
+    });
+
+    final authState = ref.watch(authViewModelProvider);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -30,10 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 const SizedBox(height: 100),
-
-                // Title
                 const Center(
                   child: Text(
                     "MunchNearby",
@@ -44,9 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 const Center(
                   child: Text(
                     "Create your Account",
@@ -56,9 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
-
                 MyTextFormField(
                   label: "Name",
                   controller: nameController,
@@ -69,10 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
-
-                // Email Field
                 MyTextFormField(
                   label: "Email",
                   controller: emailController,
@@ -83,10 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
-
-                // Role Title
                 const Text(
                   "Role:",
                   style: TextStyle(
@@ -94,10 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
-                // Role Radio Buttons
                 Row(
                   children: [
                     Radio(
@@ -109,9 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const Text("Customer"),
-
                     const SizedBox(width: 25),
-
                     Radio(
                       value: "Restaurant Owner",
                       groupValue: selectedRole,
@@ -123,10 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Text("Restaurant Owner"),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
-                // Password Field
                 MyTextFormField(
                   label: "Password",
                   controller: passwordController,
@@ -140,10 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 20),
-
-                // Confirm Password
                 MyTextFormField(
                   label: "Confirm Password",
                   controller: confirmPasswordController,
@@ -157,24 +165,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 30),
-
-                // Register Button
                 MyButton(
                   text: "Register",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      print("Email = ${emailController.text}");
-                      print("Role = $selectedRole");
-                      print("Password = ${passwordController.text}");
+                      ref.read(authViewModelProvider.notifier).register(
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        username: emailController.text.trim().split("@").first,
+                        password: passwordController.text,
+                        role: selectedRole == "Customer"
+                            ? UserRole.customer
+                            : UserRole.restaurantOwner,
+                      );
                     }
                   },
                 ),
-
                 const SizedBox(height: 25),
-
-                // Divider
                 Row(
                   children: const [
                     Expanded(child: Divider()),
@@ -185,23 +193,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(child: Divider()),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                // Google Sign-in Button
                 Center(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      // TODO: Implement Google sign-in
+                    },
                     child: Image.asset(
                       "assets/images/google.png",
                       width: 55,
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 25),
-
-                // Already have account? Login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -223,7 +227,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-
               ],
             ),
           ),

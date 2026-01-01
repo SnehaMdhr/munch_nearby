@@ -1,9 +1,21 @@
-import 'package:flutter/cupertino.dart';
-import 'package:munch_nearby/app/app.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app/app.dart';
 import 'core/services/hive/hive_service.dart';
 
-Future<void> main() async {
-  await HiveService().init();
-  runApp(App());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final hiveService = HiveService();
+  await hiveService.init();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        hiveServiceProvider.overrideWithValue(hiveService),
+      ],
+      child: App(),
+    ),
+  );
 }

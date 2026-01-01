@@ -39,8 +39,12 @@ class HiveService {
       Hive.box<AuthHiveModel>(HiveTableConstant.userTable);
 
   Future<AuthHiveModel> registerUser(AuthHiveModel model) async{
-    await _authBox.put(model.userId, model);
+    if (isEmailExists(model.email)) {
+      throw Exception("Email already exists");
+    }
+    await _authBox.put(model.email, model);
     return model;
+
   }
 
   Future<AuthHiveModel?> loginUser(String email, String password)async{

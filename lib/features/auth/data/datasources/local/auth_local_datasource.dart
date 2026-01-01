@@ -39,9 +39,10 @@ class AuthLocalDatasource implements IAuthDatasource{
   Future<bool> register(AuthHiveModel model) async{
     try{
       await _hiveService.registerUser(model);
-      return Future.value(true);
-    }catch(e){
-      return Future.value(false);
+      return true;
+    } catch (e) {
+      // Propagate exception so repository can capture the specific error message
+      rethrow;
     }
   }
 
