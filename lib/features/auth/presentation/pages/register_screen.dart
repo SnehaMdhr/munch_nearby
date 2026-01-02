@@ -214,12 +214,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     },
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
+                    if (value!.isEmpty) return "Re-enter your password";
+                    if (value != passwordController.text) return "Passwords do not match";
                     return null;
                   },
                   onChanged: (_) {},
