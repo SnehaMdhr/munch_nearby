@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
-import 'package:munch_nearby/screens/bottom_navigation_bar_for_customer.dart';
-import 'package:munch_nearby/screens/forget_password_screen.dart';
-import '../../../../screens/bottom_navigation_bar_for_restaurant.dart';
+import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
+import '../../../restaurant_owner_dashboard/presentation/pages/bottom_navigation_bar_for_restaurant.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
-import '../../../../core/widgets/my_button.dart';
-import '../../../../core/widgets/my_text_form_field.dart';
+import '../widgets/my_button.dart';
+import '../widgets/my_text_form_field.dart';
 import '../../../../core/utils/snackbar_utils.dart';
+import 'forget_password_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});

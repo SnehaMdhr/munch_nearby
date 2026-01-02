@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
 import 'package:munch_nearby/features/onboarding/presentation/widgets/page_dot.dart';
 
-import '../../../../core/widgets/my_button.dart';
+import '../../../auth/presentation/widgets/my_button.dart';
 
 
 class OnboardingScreen2 extends StatelessWidget {

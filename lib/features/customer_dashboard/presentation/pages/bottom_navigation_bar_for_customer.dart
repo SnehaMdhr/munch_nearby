@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:munch_nearby/screens/bottom_screen_customer/favourite_screen.dart';
-import 'package:munch_nearby/screens/bottom_screen_customer/home_screen.dart';
-import 'package:munch_nearby/screens/bottom_screen_customer/map_screen.dart';
-import 'package:munch_nearby/screens/bottom_screen_customer/profile_screen.dart';
 
-import '../core/widgets/app_bar_title.dart';
+import '../../../../core/widgets/app_bar_title.dart';
+import 'bottom_screen_customer/favourite_screen.dart';
+import 'bottom_screen_customer/home_screen.dart';
+import 'bottom_screen_customer/map_screen.dart';
+import 'bottom_screen_customer/profile_screen.dart';
+
 
 class BottomNavigationBarForCustomer extends StatefulWidget {
   const BottomNavigationBarForCustomer({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/widgets/my_button.dart';
-import '../../../../core/widgets/my_text_form_field.dart';
+import '../widgets/my_button.dart';
+import '../widgets/my_text_form_field.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import 'login_screen.dart';
