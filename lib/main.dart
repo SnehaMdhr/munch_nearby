@@ -12,9 +12,6 @@ void main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        hiveServiceProvider.overrideWithValue(hiveService),
-      ],
       child: App(),
     ),
   );

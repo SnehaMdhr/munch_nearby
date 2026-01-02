@@ -19,48 +19,61 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool obscurePassword = true;
+
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      await ref.read(authViewModelProvider.notifier).login(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
+    final isLoading = authState.status == AuthStatus.loading;
 
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
           context,
           next.errorMessage ?? "Login failed",
+          duration: const Duration(seconds: 1),
         );
       } else if (next.status == AuthStatus.authenticated) {
         SnackbarUtils.showSuccess(
           context,
           "Login successful",
+          duration: const Duration(seconds: 1),
         );
 
         final role = next.authEntity?.role;
-        if (role == "Customer") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const BottomNavigationBarForCustomer(),
-            ),
-          );
-        } else if (role == "Restaurant Owner") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const BottomNavigationBarForRestaurant(),
-            ),
-          );
-        } else {
-          // fallback if role is missing or unknown
-          SnackbarUtils.showError(context, "Unknown role, cannot navigate");
-        }
+
+        Future.delayed(const Duration(seconds: 2), () {
+          if (role == "Customer") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BottomNavigationBarForCustomer(),
+              ),
+            );
+          } else if (role == "Restaurant Owner") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BottomNavigationBarForRestaurant(),
+              ),
+            );
+          } else {
+            SnackbarUtils.showError(context, "Unknown role, cannot navigate");
+          }
+        });
       }
     });
-
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -71,7 +84,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
                 const SizedBox(height: 120),
                 const Text(
                   "MunchNearby",
@@ -81,9 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: Color(0xFFE87A5D),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 const Text(
                   "Welcome Back!",
                   style: TextStyle(
@@ -91,16 +101,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
                 const SizedBox(height: 40),
 
-                // Email Field
                 MyTextFormField(
                   label: "Email",
                   controller: emailController,
                   prefixIcon: Icons.email_outlined,
                   validator: (value) {
-                    if (value!.isEmpty) return "Enter your email";
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
                     return null;
                   },
                   onChanged: (_) {},
@@ -108,15 +121,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 20),
 
-                // Password Field
                 MyTextFormField(
                   label: "Password",
                   controller: passwordController,
                   prefixIcon: Icons.lock_outline,
-                  suffixIcon: Icons.visibility_off_outlined,
-                  obscureText: true,
+                  obscureText: obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                   validator: (value) {
-                    if (value!.isEmpty) return "Enter your password";
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                   onChanged: (_) {},
@@ -130,14 +158,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ForgetPasswordScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const ForgetPasswordScreen(),
+                        ),
                       );
                     },
                     child: const Text(
                       "Forgot Password?",
-                      style: TextStyle(
-                        color: Color(0xFFE87A5D),
-                      ),
+                      style: TextStyle(color: Color(0xFFE87A5D)),
                     ),
                   ),
                 ),
@@ -145,20 +173,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 25),
 
                 MyButton(
-                  text: "Login",
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await ref.read(authViewModelProvider.notifier).login(
-                        email: emailController.text.trim(),
-                        password: passwordController.text.trim(),
-                      );
-                    }
+                  text: isLoading ? "Logging in..." : "Login",
+                  onPressed: isLoading ? null : () {
+                    _handleLogin();
                   },
+                  loading: isLoading,
                 ),
+
+
 
                 const SizedBox(height: 35),
 
-                // Divider Line
                 Row(
                   children: const [
                     Expanded(child: Divider()),
@@ -183,7 +208,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 30),
 
-                // Register text link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -192,7 +216,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
                         );
                       },
                       child: const Text(
@@ -205,7 +231,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
-
               ],
             ),
           ),

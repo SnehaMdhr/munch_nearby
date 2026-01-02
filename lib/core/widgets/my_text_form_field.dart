@@ -16,7 +16,7 @@ class MyTextFormField extends StatelessWidget {
   final String label;
   final TextEditingController? controller;
   final IconData? prefixIcon;
-  final IconData? suffixIcon;
+  final Widget? suffixIcon; // <-- changed to Widget
   final bool obscureText;
   final String? Function(String?)? validator;
 
@@ -36,9 +36,8 @@ class MyTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-        suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
+        suffixIcon: suffixIcon,
       ),
     );
   }
 }
-
