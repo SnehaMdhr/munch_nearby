@@ -17,6 +17,8 @@ ThemeData getApplicationTheme(){
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFE87A5D),
         foregroundColor: Colors.white,
+        disabledBackgroundColor: const Color(0xFFE87A5D),
+        disabledForegroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 14,

@@ -20,13 +20,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
 
   final List<String> roles = ["Customer", "Restaurant Owner"];
   String? selectedRole;
 
+  Future<void> _handleRegister() async {
+    if (_formKey.currentState!.validate()) {
+      ref.read(authViewModelProvider.notifier).register(
+        name: nameController.text,
+        email: emailController.text,
+        username: emailController.text.trim().split("@").first,
+        password: passwordController.text,
+        role: selectedRole!,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
+    final isLoading = authState.status == AuthStatus.loading;
 
     // Listen for auth state changes
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
@@ -34,11 +49,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         SnackbarUtils.showError(
           context,
           next.errorMessage ?? "Registration failed",
+          duration: const Duration(seconds: 1),
         );
       } else if (next.status == AuthStatus.registered) {
         SnackbarUtils.showSuccess(
           context,
           "Registration successful",
+          duration: const Duration(seconds: 1),
         );
         Navigator.pushReplacement(
           context,
@@ -124,6 +141,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                   ),
+                  dropdownColor: Color(0xFFFEFBF8),
                   items: roles.map((role) {
                     return DropdownMenuItem<String>(
                       value: role,
@@ -150,11 +168,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   label: "Password",
                   controller: passwordController,
                   prefixIcon: Icons.lock_outline,
-                  suffixIcon: Icons.visibility_off_outlined,
-                  obscureText: true,
+                  obscureText: obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                   validator: (value) {
-                    if (value!.isEmpty) return "Enter your password";
-                    if (value.length < 6) return "Password must be at least 6 characters";
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                   onChanged: (_) {},
@@ -167,11 +200,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   label: "Confirm Password",
                   controller: confirmPasswordController,
                   prefixIcon: Icons.lock_outline,
-                  suffixIcon: Icons.visibility_off_outlined,
-                  obscureText: true,
+                  obscureText: obscureConfirmPassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                   validator: (value) {
-                    if (value!.isEmpty) return "Re-enter your password";
-                    if (value != passwordController.text) return "Passwords do not match";
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                   onChanged: (_) {},
@@ -179,26 +227,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 const SizedBox(height: 30),
 
-                // Register Button
+
                 MyButton(
-                  text: "Register",
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ref.read(authViewModelProvider.notifier).register(
-                        name: nameController.text,
-                        email: emailController.text,
-                        username: emailController.text.trim().split("@").first,
-                        password: passwordController.text,
-                        role: selectedRole!,
-                      );
-                    }
+                  text: isLoading ? "Registering in..." : "Register",
+                  onPressed: isLoading ? null : () {
+                    _handleRegister();
                   },
+                  loading: isLoading,
                 ),
-
-
                 const SizedBox(height: 25),
 
-                // Divider
                 Row(
                   children: const [
                     Expanded(child: Divider()),
