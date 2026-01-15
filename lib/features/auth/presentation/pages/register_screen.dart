@@ -24,8 +24,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
 
-  final List<String> roles = ["Customer", "Restaurant Owner"];
-  String? selectedRole; // start as null
+  final Map<String, String> roleMap = {
+    "Customer": "customer",
+    "Restaurant Owner": "restaurant_owner",
+  };
+  String? selectedRole; 
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
@@ -35,7 +38,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         username: emailController.text.trim().split("@").first,
         password: passwordController.text.trim(),
         confirmPassword: confirmPasswordController.text.trim(),
-        role: selectedRole!,
+        role: roleMap[selectedRole!]!,
       );
     }
   }
@@ -54,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
-    // ✅ Safe listener inside build
+  
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
@@ -133,7 +136,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 20),
 
                 DropdownButtonFormField<String>(
-                  value: selectedRole, // starts as null
+                  value: selectedRole, 
                   decoration: const InputDecoration(
                     labelText: 'Select Role',
                     prefixIcon: Icon(Icons.person_outline),
@@ -141,9 +144,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                   ),
-                  hint: const Text("Choose your role"), // 👈 shows before selection
+                  hint: const Text("Choose your role"), 
                   dropdownColor: const Color(0xFFFEFBF8),
-                  items: roles.map((role) {
+                  items: roleMap.keys.map((role) {
                     return DropdownMenuItem<String>(
                       value: role,
                       child: Text(role),

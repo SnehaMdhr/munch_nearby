@@ -32,14 +32,14 @@ class UserSessionService {
     required String email,
     required String name,
     required String role,
-    required String username,
+    String? username,
     String? profilePicture,
   }) async {
     await _prefs.setBool(_keyIsLoggedIn, true);
     await _prefs.setString(_keyUserId, userId);
     await _prefs.setString(_keyUserEmail, email);
     await _prefs.setString(_keyUserName, name);
-    await _prefs.setString(_keyUserUsername, username);
+    await _prefs.setString(_keyUserUsername, username ?? '');
     await _prefs.setString(_keyUserRole, role);
     if (profilePicture != null) {
       await _prefs.setString(_keyUserProfilePicture, profilePicture);

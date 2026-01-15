@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class SnackbarUtils {
-  static void showError(BuildContext context, String message, {Duration duration = const Duration(seconds: 2)}) {
+  static void showError(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
     _showSnackBar(
       context,
       message,
@@ -11,7 +15,11 @@ class SnackbarUtils {
     );
   }
 
-  static void showSuccess(BuildContext context, String message, {Duration duration = const Duration(seconds: 2)}) {
+  static void showSuccess(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
     _showSnackBar(
       context,
       message,
@@ -21,7 +29,11 @@ class SnackbarUtils {
     );
   }
 
-  static void showInfo(BuildContext context, String message, {Duration duration = const Duration(seconds: 2)}) {
+  static void showInfo(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
     _showSnackBar(
       context,
       message,
@@ -31,7 +43,11 @@ class SnackbarUtils {
     );
   }
 
-  static void showWarning(BuildContext context, String message, {Duration duration = const Duration(seconds: 2)}) {
+  static void showWarning(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
     _showSnackBar(
       context,
       message,
@@ -42,13 +58,18 @@ class SnackbarUtils {
   }
 
   static void _showSnackBar(
-      BuildContext context,
-      String message, {
-        required Color backgroundColor,
-        required IconData icon,
-        required Duration duration,
-      }) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    BuildContext context,
+    String message, {
+    required Color backgroundColor,
+    required IconData icon,
+    required Duration duration,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+
+    // ✅ Prevent blinking: remove any current snackbar instantly
+    messenger.removeCurrentSnackBar();
+
+    messenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [

@@ -7,8 +7,8 @@ import 'package:munch_nearby/features/auth/data/models/auth_api_model.dart';
 
 final authRemoteDatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
   return AuthRemoteDatasource(
-    ApiClient: ref.read(apiClientProvider), 
-    UserSessionService: ref.read(userSessionServiceProvider),
+    apiClient: ref.read(apiClientProvider), 
+    userSessionService: ref.read(userSessionServiceProvider),
   );
 });
 
@@ -18,10 +18,10 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
   final UserSessionService _userSessionService;
 
   AuthRemoteDatasource({
-    required ApiClient ApiClient,
-    required UserSessionService UserSessionService,
-  }): _apiClient = ApiClient,
-      _userSessionService = UserSessionService;
+    required ApiClient apiClient,
+    required UserSessionService userSessionService,
+  }): _apiClient = apiClient,
+      _userSessionService = userSessionService;
       
         @override
         Future<bool> isEmailExists(String email) {
@@ -32,23 +32,29 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
         @override
         Future<AuthApiModel?> login(String email, String password) async {
           final response = await _apiClient.post(
-            ApiEndpoints.userLogin,
-            data: {"email": email, "password": password},
-          );
-          print('Login response: ${response.data}');
-          if(response.data["success"]== true){
-            final data = response.data["data"] as Map<String, dynamic>;
-            final user = AuthApiModel.fromJson(data);
-            await _userSessionService.saveUserSession(
-              userId: user.id!, 
-              email: user.email, 
-              name: user.name,
-              role: user.role,
-              username: user.username!,
+              ApiEndpoints.userLogin,
+              data: {"email": email, "password": password},
             );
-            return user;
-          }
-          return null;
+
+            if(response.data["success"]== true){
+              final data = response.data["data"] as Map<String, dynamic>;
+              final user = AuthApiModel.fromJson(data);
+
+              //save the session
+              if (user.id != null) {
+                await _userSessionService.saveUserSession(
+                    userId: user.id!,
+                    email: user.email,
+                    name: user.name,
+                    username: user.username,
+                    role: user.role,
+                );
+              } else {
+                // Handle the case where user.id is null
+              }
+              return user;
+            }
+            return null;
         }
         
           @override
