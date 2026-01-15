@@ -35,8 +35,12 @@ class HiveService {
   //Queries
 
 
-  Box<AuthHiveModel> get _authBox =>
-      Hive.box<AuthHiveModel>(HiveTableConstant.userTable);
+  Box<AuthHiveModel> get _authBox {
+    if (!Hive.isBoxOpen(HiveTableConstant.userTable)) {
+      throw Exception('Hive box ${HiveTableConstant.userTable} is not open');
+    }
+    return Hive.box<AuthHiveModel>(HiveTableConstant.userTable);
+  }
 
   Future<AuthHiveModel> registerUser(AuthHiveModel model) async{
     await _authBox.put(model.userId, model);

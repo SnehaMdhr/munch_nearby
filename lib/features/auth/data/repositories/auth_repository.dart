@@ -67,7 +67,7 @@ class AuthRepository implements IAuthRepository{
     }
     }
   }
-
+  
   @override
   Future<Either<Failure, bool>> register(AuthEntity entity) async{
     if(await _networkInfo.isConnected){
@@ -76,14 +76,14 @@ class AuthRepository implements IAuthRepository{
         await _authRemoteDataSource.register(apiModel);
         return const Right(true);
       }on DioException catch(e){
-        return Left(
+        return left(
           ApiFailure(
-            message:e.response?.data["message"] ?? "Registration Failed",
-            statusCode: e.response?.statusCode
+            message: e.response?.data["message"] ?? "Register Failed",
+            statusCode: e.response?.statusCode,
           ),
         );
-      }catch(e){
-        return Left(ApiFailure(message: e.toString()));
+        }catch(e){
+          return Left(ApiFailure(message: e.toString()));
       }
     }else{
       try{

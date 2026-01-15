@@ -37,12 +37,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
+    // ✅ Listen here instead of initState
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
           context,
           next.errorMessage ?? "Login failed",
-          duration: const Duration(seconds: 1),
+          duration: const Duration(seconds: 2),
         );
       } else if (next.status == AuthStatus.authenticated) {
         SnackbarUtils.showSuccess(
@@ -52,26 +53,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
 
         final role = next.authEntity?.role;
-
-        Future.delayed(const Duration(seconds: 1), () {
-          if (role == "Customer") {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigationBarForCustomer(),
-              ),
-            );
-          } else if (role == "Restaurant Owner") {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigationBarForRestaurant(),
-              ),
-            );
-          } else {
-            SnackbarUtils.showError(context, "Unknown role, cannot navigate");
-          }
-        });
+        if (role == "Customer") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const BottomNavigationBarForCustomer(),
+            ),
+          );
+        } else if (role == "Restaurant Owner") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const BottomNavigationBarForRestaurant(),
+            ),
+          );
+        } else {
+          SnackbarUtils.showError(context, "Unknown role, cannot navigate");
+        }
       }
     });
 
@@ -159,7 +157,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgetPasswordScreen(),
+                          builder: (_) => const ForgetPasswordScreen(),
                         ),
                       );
                     },
@@ -174,13 +172,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 MyButton(
                   text: isLoading ? "Logging in..." : "Login",
-                  onPressed: isLoading ? null : () {
-                    _handleLogin();
-                  },
+                  onPressed: isLoading ? null : _handleLogin,
                   loading: isLoading,
                 ),
-
-
 
                 const SizedBox(height: 35),
 
@@ -198,7 +192,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 20),
                 Center(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      // TODO: integrate Google sign-in
+                    },
                     child: Image.asset(
                       "assets/images/google.png",
                       width: 55,
@@ -217,7 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
+                            builder: (_) => const RegisterScreen(),
                           ),
                         );
                       },

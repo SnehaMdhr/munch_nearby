@@ -7,6 +7,7 @@ class AuthApiModel {
   final String role;
   final String? username;
   final String? password;
+  final String? confirmPassword;
   final String? profilePicture;
 
   AuthApiModel({
@@ -16,6 +17,7 @@ class AuthApiModel {
     required this.role,
     this.username,
     this.password,
+    this.confirmPassword,
     this.profilePicture,
   });
 
@@ -28,6 +30,7 @@ class AuthApiModel {
       "role": role,
       "username": username,
       "password": password,
+      "confirmPassword": confirmPassword,
       "profilePicture":profilePicture,
     };
   }
@@ -48,22 +51,25 @@ class AuthApiModel {
   AuthEntity toEntity(){
     return AuthEntity(
       userId: id,
-      name: name, 
-      email: email, 
+      name: name,
+      email: email,
       role: role,
       username: username,
       profilePicture: profilePicture,
+      password: password,
+      confirmPassword: confirmPassword,
     );
   }
 
   //fromEntity
   factory AuthApiModel.fromEntity(AuthEntity entity){
     return AuthApiModel(
-      name: entity.name, 
-      email: entity.email, 
+      name: entity.name,
+      email: entity.email,
       username: entity.username,
       password: entity.password,
-      profilePicture: entity.profilePicture, 
+      confirmPassword: entity.confirmPassword,
+      profilePicture: entity.profilePicture,
       role: entity.role,
     );
   }

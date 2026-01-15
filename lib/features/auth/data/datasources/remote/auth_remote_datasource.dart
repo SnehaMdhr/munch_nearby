@@ -35,6 +35,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
             ApiEndpoints.userLogin,
             data: {"email": email, "password": password},
           );
+          print('Login response: ${response.data}');
           if(response.data["success"]== true){
             final data = response.data["data"] as Map<String, dynamic>;
             final user = AuthApiModel.fromJson(data);
@@ -51,17 +52,18 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
         }
         
           @override
-          Future<AuthApiModel?> register(AuthApiModel model) async{
+          Future<AuthApiModel?> register(AuthApiModel model) async {
             final response = await _apiClient.post(
-            ApiEndpoints.users,
-            data: model.toJson(),
-          );
-          if(response.data["success"]==true){
-            final data = response.data["data"] as Map<String, dynamic>;
-            final registeredUser = AuthApiModel.fromJson(data);
-            return registeredUser;
+              ApiEndpoints.userRegister,
+              data: model.toJson(),
+            );
+            if(response.data["success"]==true){
+              final data = response.data["data"] as Map<String, dynamic>;
+              final registeredUser = AuthApiModel.fromJson(data);
+              return registeredUser;
+            }
+            return model;
           }
-          return model;
-          }
-      
+        
+          
 }
