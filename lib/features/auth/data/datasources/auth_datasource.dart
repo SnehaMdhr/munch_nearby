@@ -1,9 +1,17 @@
 
+import 'package:munch_nearby/features/auth/data/models/auth_api_model.dart';
+
 import '../models/auth_hive_model.dart';
 
-abstract interface class IAuthDatasource{
+abstract interface class IAuthLocalDatasource{
   Future<bool> register(AuthHiveModel model);
   Future<AuthHiveModel?> login(String email, String password);
 
+  Future<bool> isEmailExists(String email);
+}
+
+abstract interface class IAuthRemoteDatasource {
+  Future<AuthApiModel?> register(AuthApiModel model);
+  Future<AuthApiModel?> login(String email, String password);
   Future<bool> isEmailExists(String email);
 }
