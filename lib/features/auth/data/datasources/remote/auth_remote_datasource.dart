@@ -5,7 +5,7 @@ import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/data/datasources/auth_datasource.dart';
 import 'package:munch_nearby/features/auth/data/models/auth_api_model.dart';
 
-final authRemoteSatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
+final authRemoteDatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
   return AuthRemoteDatasource(
     ApiClient: ref.read(apiClientProvider), 
     UserSessionService: ref.read(userSessionServiceProvider),
