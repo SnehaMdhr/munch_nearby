@@ -98,6 +98,19 @@ class AuthRepository implements IAuthRepository{
     }
     }
   }
+  
+  @override
+  Future<Either<Failure, bool>> logout() async{
+    try {
+      final result = await _authLocalDatasource.logout();
+      if (result) {
+        return const Right(true);
+      }
+      return  Left(LocalDatabaseFailure(message: "Failed to logout"));
+    } catch (e) {
+      return Left(LocalDatabaseFailure(message: e.toString()));
+    }
+  }
 }
 
 

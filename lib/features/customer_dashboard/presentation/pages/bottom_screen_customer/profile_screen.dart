@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
+import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/customer_dashboard/presentation/widgets/profile_item.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox.expand(
       child: Container(
         color: const Color(0xFFFFF6F1),
@@ -85,7 +88,17 @@ class ProfileScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      // Clear user session
+                      await ref.read(authViewModelProvider.notifier).logout();
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        );
+
+                      }
+                    },
                     icon: const Icon(Icons.logout, size: 18),
                     label: const Text("Logout"),
                   ),

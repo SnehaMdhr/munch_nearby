@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/features/auth/domain/usecases/logout_usecase.dart';
 
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -10,11 +11,13 @@ final authViewModelProvider = NotifierProvider<AuthViewModel, AuthState>(
 class AuthViewModel extends Notifier<AuthState>{
   late final RegisterUsecase _registerUsecase;
   late final LoginUsecase _loginUsecase;
+  late final LogoutUsecase _logoutUsecase;
 
   @override
   AuthState build() {
     _registerUsecase = ref.read(registerUsecaseProvider);
     _loginUsecase= ref.read(loginUsecaseProvider);
+    _logoutUsecase = ref.read(logoutUsecaseProvider);
     return AuthState();
   }
 
@@ -74,6 +77,23 @@ class AuthViewModel extends Notifier<AuthState>{
           authEntity: authEntity,
         );
       },
+    );
+  }
+
+  Future<void> logout() async {
+    state = state.copyWith(status: AuthStatus.loading);
+
+    final result = await _logoutUsecase();
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(
+        status: AuthStatus.unauthenticated,
+        authEntity: null,
+      ),
     );
   }
 

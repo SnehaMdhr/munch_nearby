@@ -6,7 +6,7 @@ import '../models/auth_hive_model.dart';
 abstract interface class IAuthLocalDatasource{
   Future<bool> register(AuthHiveModel model);
   Future<AuthHiveModel?> login(String email, String password);
-
+  Future<bool> logout();
   Future<bool> isEmailExists(String email);
 }
 
