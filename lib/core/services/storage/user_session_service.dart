@@ -20,7 +20,7 @@ class UserSessionService {
   static const String _keyUserId = 'user_id';
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserName = 'user_full_name';
-  static const String _keyUserRole = 'user_role';
+  // static const String _keyUserRole = 'user_role';
   static const String _keyUserUsername = 'user_username';
   static const String _keyUserProfilePicture = 'user_profile_picture';
 

@@ -36,9 +36,9 @@ class ProfileScreen extends ConsumerWidget {
                   backgroundColor: const Color(0xFFFFD6C9),
                   child: const CircleAvatar(
                     radius: 44,
-                    backgroundImage: AssetImage(
-                      "assets/images/avatar.png", // optional
-                    ),
+                    // backgroundImage: AssetImage(
+                    //   "assets/images/avatar.png",
+                    // ),
                   ),
                 ),
 
@@ -64,7 +64,6 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: 30),
 
-                // Menu List
                 ProfileItem(
                   icon: Icons.edit,
                   title: "Edit Profile",
@@ -83,7 +82,6 @@ class ProfileScreen extends ConsumerWidget {
 
                 const Spacer(),
 
-                // Logout Button
                 SizedBox(
                   width: double.infinity,
                   height: 48,

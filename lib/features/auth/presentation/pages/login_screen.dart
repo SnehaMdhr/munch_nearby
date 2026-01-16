@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
 import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
-import '../../../restaurant_owner_dashboard/presentation/pages/bottom_navigation_bar_for_restaurant.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import '../widgets/my_button.dart';
