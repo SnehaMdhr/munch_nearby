@@ -24,11 +24,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
 
-  final Map<String, String> roleMap = {
-    "Customer": "customer",
-    "Restaurant Owner": "restaurant_owner",
-  };
-  String? selectedRole; 
+  // final Map<String, String> roleMap = {
+  //   "Customer": "customer",
+  //   "Restaurant Owner": "restaurant_owner",
+  // };
+  // String? selectedRole; 
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
@@ -38,7 +38,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         username: emailController.text.trim().split("@").first,
         password: passwordController.text.trim(),
         confirmPassword: confirmPasswordController.text.trim(),
-        role: roleMap[selectedRole!]!,
+        // role: roleMap[selectedRole!]!,
       );
     }
   }
@@ -135,31 +135,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                DropdownButtonFormField<String>(
-                  value: selectedRole, 
-                  decoration: const InputDecoration(
-                    labelText: 'Select Role',
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                  ),
-                  hint: const Text("Choose your role"), 
-                  dropdownColor: const Color(0xFFFEFBF8),
-                  items: roleMap.keys.map((role) {
-                    return DropdownMenuItem<String>(
-                      value: role,
-                      child: Text(role),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRole = value;
-                    });
-                  },
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Please select your role' : null,
-                ),
+                // DropdownButtonFormField<String>(
+                //   value: selectedRole, 
+                //   decoration: const InputDecoration(
+                //     labelText: 'Select Role',
+                //     prefixIcon: Icon(Icons.person_outline),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.all(Radius.circular(8)),
+                //     ),
+                //   ),
+                //   hint: const Text("Choose your role"), 
+                //   dropdownColor: const Color(0xFFFEFBF8),
+                //   items: roleMap.keys.map((role) {
+                //     return DropdownMenuItem<String>(
+                //       value: role,
+                //       child: Text(role),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       selectedRole = value;
+                //     });
+                //   },
+                //   validator: (value) =>
+                //       value == null || value.isEmpty ? 'Please select your role' : null,
+                // ),
                 const SizedBox(height: 20),
 
                 MyTextFormField(

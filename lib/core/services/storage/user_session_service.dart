@@ -31,7 +31,7 @@ class UserSessionService {
     required String userId,
     required String email,
     required String name,
-    required String role,
+    // required String role,
     String? username,
     String? profilePicture,
   }) async {
@@ -40,7 +40,7 @@ class UserSessionService {
     await _prefs.setString(_keyUserEmail, email);
     await _prefs.setString(_keyUserName, name);
     await _prefs.setString(_keyUserUsername, username ?? '');
-    await _prefs.setString(_keyUserRole, role);
+    // await _prefs.setString(_keyUserRole, role);
     if (profilePicture != null) {
       await _prefs.setString(_keyUserProfilePicture, profilePicture);
     }
@@ -65,9 +65,9 @@ class UserSessionService {
   String? getCurrentUserName() {
     return _prefs.getString(_keyUserName);
   }
-  String? getCurrentUserRole() {
-    return _prefs.getString(_keyUserRole);
-  }
+  // String? getCurrentUserRole() {
+  //   return _prefs.getString(_keyUserRole);
+  // }
 
   // Get current user username
   String? getCurrentUserUsername() {
@@ -85,7 +85,7 @@ class UserSessionService {
     await _prefs.remove(_keyUserId);
     await _prefs.remove(_keyUserEmail);
     await _prefs.remove(_keyUserName);
-    await _prefs.remove(_keyUserRole);
+    // await _prefs.remove(_keyUserRole);
     await _prefs.remove(_keyUserUsername);
     await _prefs.remove(_keyUserProfilePicture);
   }

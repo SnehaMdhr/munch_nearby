@@ -21,7 +21,7 @@ class AuthViewModel extends Notifier<AuthState>{
   Future<void> register({
     required String name,
     required String email,
-    required String role,
+    // required String role,
     required String username,
     required String password,
     required String confirmPassword,
@@ -31,7 +31,7 @@ class AuthViewModel extends Notifier<AuthState>{
     final params = RegisterUsecaseParams(
         name: name,
         email: email,
-        role: role,
+        // role: role,
         username: username,
         password: password,
         confirmPassword: confirmPassword,

@@ -4,7 +4,7 @@ class AuthApiModel {
   final String? id;
   final String name;
   final String email;
-  final String role;
+  // final String role;
   final String? username;
   final String? password;
   final String? confirmPassword;
@@ -14,7 +14,7 @@ class AuthApiModel {
     this.id,
     required this.name,
     required this.email,
-    required this.role,
+    // required this.role,
     this.username,
     this.password,
     this.confirmPassword,
@@ -27,7 +27,7 @@ class AuthApiModel {
     return{
       "name": name,
       "email":email,
-      "role": role,
+      // "role": role,
       "username": username,
       "password": password,
       "confirmPassword": confirmPassword,
@@ -41,7 +41,7 @@ class AuthApiModel {
       id: json["id"] as String?,
       name: json["name"] as String? ?? "",
       email: json["email"] as String? ?? "",
-      role: json["role"] as String? ?? "customer",
+      // role: json["role"] as String? ?? "customer",
       username: json["username"] as String?,
       profilePicture: json["profilePicture"] as String?,
     );
@@ -53,7 +53,7 @@ class AuthApiModel {
       userId: id,
       name: name,
       email: email,
-      role: role,
+      // role: role,
       username: username,
       profilePicture: profilePicture,
       password: password,
@@ -70,7 +70,7 @@ class AuthApiModel {
       password: entity.password,
       confirmPassword: entity.confirmPassword,
       profilePicture: entity.profilePicture,
-      role: entity.role,
+      // role: entity.role,
     );
   }
 

@@ -37,13 +37,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
-    // ✅ Listen here instead of initState
+    // ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+    //   if (next.status == AuthStatus.error) {
+    //     SnackbarUtils.showError(
+    //       context,
+    //       next.errorMessage ?? "Login failed",
+    //       duration: const Duration(seconds: 2),
+    //     );
+    //   } else if (next.status == AuthStatus.authenticated) {
+    //     SnackbarUtils.showSuccess(
+    //       context,
+    //       "Login successful",
+    //       duration: const Duration(seconds: 1),
+    //     );
+
+    //     final role = next.authEntity?.role;
+    //     if (role == "Customer") {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (_) => const BottomNavigationBarForCustomer(),
+    //         ),
+    //       );
+    //     } else if (role == "Restaurant Owner") {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (_) => const BottomNavigationBarForRestaurant(),
+    //         ),
+    //       );
+    //     } else {
+    //       SnackbarUtils.showError(context, "Unknown role, cannot navigate");
+    //     }
+    //   }
+    // });
+
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
           context,
           next.errorMessage ?? "Login failed",
-          duration: const Duration(seconds: 2),
+          duration: const Duration(seconds: 1),
         );
       } else if (next.status == AuthStatus.authenticated) {
         SnackbarUtils.showSuccess(
@@ -52,26 +86,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           duration: const Duration(seconds: 1),
         );
 
-        final role = next.authEntity?.role;
-        if (role == "Customer") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const BottomNavigationBarForCustomer(),
-            ),
-          );
-        } else if (role == "Restaurant Owner") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const BottomNavigationBarForRestaurant(),
-            ),
-          );
-        } else {
-          SnackbarUtils.showError(context, "Unknown role, cannot navigate");
-        }
+        // Always go to Customer Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const BottomNavigationBarForCustomer(),
+          ),
+        );
       }
     });
+
 
     return Scaffold(
       body: SingleChildScrollView(

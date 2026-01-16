@@ -16,23 +16,23 @@ class AuthHiveModel extends HiveObject {
   @HiveField(2)
   final String email;
 
-  @HiveField(3)
-  final String role;
+  // @HiveField(3)
+  // final String role;
 
-  @HiveField(4)
+  @HiveField(3)
   final String? password;
 
-  @HiveField(5)
+  @HiveField(4)
   final String? username;
 
-  @HiveField(6)
+  @HiveField(5)
   final String? profilePicture;
 
   AuthHiveModel({
     String? userId,
     required this.name,
     required this.email,
-    required this.role,
+    // required this.role,
     this.password,
     this.username,
     this.profilePicture,
@@ -44,7 +44,7 @@ class AuthHiveModel extends HiveObject {
       userId: entity.userId,
       name: entity.name,
       email: entity.email,
-      role: entity.role,
+      // role: entity.role,
       password: entity.password,
       username: entity.username,
       profilePicture: entity.profilePicture,
@@ -57,7 +57,7 @@ class AuthHiveModel extends HiveObject {
       userId: userId,
       name: name,
       email: email,
-      role: role,
+      // role: role,
       password: password,
       username: username,
       profilePicture: profilePicture,
