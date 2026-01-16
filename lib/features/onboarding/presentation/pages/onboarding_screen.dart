@@ -71,7 +71,6 @@ class OnboardingScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // Page indicator (static example)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -83,7 +82,6 @@ class OnboardingScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Next button
             MyButton(onPressed: (){
               Navigator.push(
                 context,

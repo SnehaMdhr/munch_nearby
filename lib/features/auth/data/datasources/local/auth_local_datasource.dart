@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 
 import '../../../../../core/services/hive/hive_service.dart';
 import '../../models/auth_hive_model.dart';
@@ -6,14 +7,17 @@ import '../auth_datasource.dart';
 
 final authLocalDatasourceProvider = Provider<AuthLocalDatasource>((ref){
   final hiveService = ref.watch(hiveServiceProvider);
-  return AuthLocalDatasource(hiveService: hiveService);
+  final userSessionService = ref.read(userSessionServiceProvider);
+  return AuthLocalDatasource(hiveService: hiveService, userSessionService: userSessionService);
 });
 
-class AuthLocalDatasource implements IAuthDatasource{
+class AuthLocalDatasource implements IAuthLocalDatasource{
   final HiveService _hiveService;
+  final UserSessionService _userSessionService;
 
-  AuthLocalDatasource({required HiveService hiveService})
-      : _hiveService =hiveService;
+  AuthLocalDatasource({required HiveService hiveService, required UserSessionService userSessionService,})
+      : _hiveService =hiveService,
+      _userSessionService = userSessionService;
 
   @override
   Future<bool> isEmailExists(String email) {
@@ -42,6 +46,16 @@ class AuthLocalDatasource implements IAuthDatasource{
       return Future.value(true);
     }catch(e){
       return Future.value(false);
+    }
+  }
+  
+  @override
+  Future<bool> logout() async{
+     try {
+      await _userSessionService.clearSession();
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

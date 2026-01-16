@@ -18,7 +18,7 @@ class LocalDatabaseFailure extends Failure{
 class ApiFailure extends Failure{
   final int? statusCode;
   ApiFailure({
+    required String message,
     this.statusCode,
-    required String message
   }) : super(message);
 }

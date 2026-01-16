@@ -6,6 +6,7 @@ import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import 'login_screen.dart';
 import '../../../../core/utils/snackbar_utils.dart';
+
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -23,19 +24,32 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
 
-  final List<String> roles = ["Customer", "Restaurant Owner"];
-  String? selectedRole;
+  // final Map<String, String> roleMap = {
+  //   "Customer": "customer",
+  //   "Restaurant Owner": "restaurant_owner",
+  // };
+  // String? selectedRole; 
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      ref.read(authViewModelProvider.notifier).register(
-        name: nameController.text,
-        email: emailController.text,
+      await ref.read(authViewModelProvider.notifier).register(
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
         username: emailController.text.trim().split("@").first,
-        password: passwordController.text,
-        role: selectedRole!,
+        password: passwordController.text.trim(),
+        confirmPassword: confirmPasswordController.text.trim(),
+        // role: roleMap[selectedRole!]!,
       );
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
-    // Listen for auth state changes
+  
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
@@ -59,7 +73,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
     });
@@ -73,10 +87,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 const SizedBox(height: 100),
-
-                // Title
                 const Center(
                   child: Text(
                     "MunchNearby",
@@ -87,9 +98,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 const Center(
                   child: Text(
                     "Create your Account",
@@ -99,71 +108,60 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
 
-                // Name Field
                 MyTextFormField(
                   label: "Name",
                   controller: nameController,
                   prefixIcon: Icons.person_2_outlined,
-                  validator: (value) {
-                    if (value!.isEmpty) return "Enter your name";
-                    return null;
-                  },
+                  validator: (value) =>
+                      value!.isEmpty ? "Enter your name" : null,
                   onChanged: (_) {},
                 ),
-
                 const SizedBox(height: 20),
 
-                // Email Field
                 MyTextFormField(
                   label: "Email",
                   controller: emailController,
                   prefixIcon: Icons.email_outlined,
                   validator: (value) {
                     if (value!.isEmpty) return "Enter your email";
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return "Enter a valid email";
+                    }
                     return null;
                   },
                   onChanged: (_) {},
                 ),
-
                 const SizedBox(height: 20),
 
-                // Role Dropdown
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Role',
-                    hintText: 'Choose your role',
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                  ),
-                  dropdownColor: Color(0xFFFEFBF8),
-                  items: roles.map((role) {
-                    return DropdownMenuItem<String>(
-                      value: role,
-                      child: Text(role),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRole = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select your role';
-                    }
-                    return null;
-                  },
-                ),
-
+                // DropdownButtonFormField<String>(
+                //   value: selectedRole, 
+                //   decoration: const InputDecoration(
+                //     labelText: 'Select Role',
+                //     prefixIcon: Icon(Icons.person_outline),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.all(Radius.circular(8)),
+                //     ),
+                //   ),
+                //   hint: const Text("Choose your role"), 
+                //   dropdownColor: const Color(0xFFFEFBF8),
+                //   items: roleMap.keys.map((role) {
+                //     return DropdownMenuItem<String>(
+                //       value: role,
+                //       child: Text(role),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       selectedRole = value;
+                //     });
+                //   },
+                //   validator: (value) =>
+                //       value == null || value.isEmpty ? 'Please select your role' : null,
+                // ),
                 const SizedBox(height: 20),
 
-                // Password Field
                 MyTextFormField(
                   label: "Password",
                   controller: passwordController,
@@ -192,10 +190,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                   onChanged: (_) {},
                 ),
-
                 const SizedBox(height: 20),
 
-                // Confirm Password
                 MyTextFormField(
                   label: "Confirm Password",
                   controller: confirmPasswordController,
@@ -203,32 +199,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: obscureConfirmPassword,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      obscurePassword
+                      obscureConfirmPassword
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
                     ),
                     onPressed: () {
                       setState(() {
-                        obscurePassword = !obscurePassword;
+                        obscureConfirmPassword = !obscureConfirmPassword;
                       });
                     },
                   ),
                   validator: (value) {
                     if (value!.isEmpty) return "Re-enter your password";
-                    if (value != passwordController.text) return "Passwords do not match";
+                    if (value != passwordController.text) {
+                      return "Passwords do not match";
+                    }
                     return null;
                   },
                   onChanged: (_) {},
                 ),
-
                 const SizedBox(height: 30),
 
-
                 MyButton(
-                  text: isLoading ? "Registering in..." : "Register",
-                  onPressed: isLoading ? null : () {
-                    _handleRegister();
-                  },
+                  text: isLoading ? "Registering..." : "Register",
+                  onPressed: isLoading ? null : _handleRegister,
                   loading: isLoading,
                 ),
                 const SizedBox(height: 25),
@@ -243,23 +237,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(child: Divider()),
                   ],
                 ),
-
                 const SizedBox(height: 20),
 
-                // Google Sign-in Button
                 Center(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      // TODO: integrate Google sign-in
+                    },
                     child: Image.asset(
                       "assets/images/google.png",
                       width: 55,
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 25),
 
-                // Already have account? Login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -268,7 +260,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
                         );
                       },
                       child: const Text(
@@ -281,7 +273,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ],
                 ),
-
               ],
             ),
           ),

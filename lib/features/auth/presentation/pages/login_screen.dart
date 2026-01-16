@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
 import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
-import '../../../restaurant_owner_dashboard/presentation/pages/bottom_navigation_bar_for_restaurant.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import '../widgets/my_button.dart';
@@ -37,6 +36,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
+    // ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+    //   if (next.status == AuthStatus.error) {
+    //     SnackbarUtils.showError(
+    //       context,
+    //       next.errorMessage ?? "Login failed",
+    //       duration: const Duration(seconds: 2),
+    //     );
+    //   } else if (next.status == AuthStatus.authenticated) {
+    //     SnackbarUtils.showSuccess(
+    //       context,
+    //       "Login successful",
+    //       duration: const Duration(seconds: 1),
+    //     );
+
+    //     final role = next.authEntity?.role;
+    //     if (role == "Customer") {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (_) => const BottomNavigationBarForCustomer(),
+    //         ),
+    //       );
+    //     } else if (role == "Restaurant Owner") {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (_) => const BottomNavigationBarForRestaurant(),
+    //         ),
+    //       );
+    //     } else {
+    //       SnackbarUtils.showError(context, "Unknown role, cannot navigate");
+    //     }
+    //   }
+    // });
+
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
@@ -51,29 +85,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           duration: const Duration(seconds: 1),
         );
 
-        final role = next.authEntity?.role;
-
-        Future.delayed(const Duration(seconds: 1), () {
-          if (role == "Customer") {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigationBarForCustomer(),
-              ),
-            );
-          } else if (role == "Restaurant Owner") {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigationBarForRestaurant(),
-              ),
-            );
-          } else {
-            SnackbarUtils.showError(context, "Unknown role, cannot navigate");
-          }
-        });
+        // Always go to Customer Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const BottomNavigationBarForCustomer(),
+          ),
+        );
       }
     });
+
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -159,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgetPasswordScreen(),
+                          builder: (_) => const ForgetPasswordScreen(),
                         ),
                       );
                     },
@@ -174,13 +195,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 MyButton(
                   text: isLoading ? "Logging in..." : "Login",
-                  onPressed: isLoading ? null : () {
-                    _handleLogin();
-                  },
+                  onPressed: isLoading ? null : _handleLogin,
                   loading: isLoading,
                 ),
-
-
 
                 const SizedBox(height: 35),
 
@@ -198,7 +215,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 20),
                 Center(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      // TODO: integrate Google sign-in
+                    },
                     child: Image.asset(
                       "assets/images/google.png",
                       width: 55,
@@ -217,7 +236,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
+                            builder: (_) => const RegisterScreen(),
                           ),
                         );
                       },
