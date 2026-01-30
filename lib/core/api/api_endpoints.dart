@@ -17,16 +17,16 @@ class ApiEndpoints {
   static const String compIpAddress = "192.168.1.1";
   static String get baseUrl {
     if(isPhysicalDevice){
-      return "http://$compIpAddress:3000/api/v1";
+      return "http://$compIpAddress:3000/api";
     }
     if(kIsWeb){
-      return "http://localhost:3000/api/v1";
+      return "http://localhost:3000/api";
     } else if (Platform.isAndroid){
-      return "http://10.0.2.2:3000/api/v1";
+      return "http://10.0.2.2:3000/api";
     }else if (Platform.isIOS){
-      return "http://localhost:3000/api/v1";
+      return "http://localhost:3000/api";
     }else {
-      return "http://lovalhost:3000/api/v1";
+      return "http://localhost:3000/api";
     }
   }
 
@@ -41,4 +41,5 @@ class ApiEndpoints {
   static const String userRegister = '/auth/register';
   static String userById(String id) => '/auth/$id';
   static String userPhoto(String id) => '/auth/$id/photo';
+  static String uploadImage = "/auth/update-profile";
 }
