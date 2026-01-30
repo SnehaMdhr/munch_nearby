@@ -31,15 +31,35 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Avatar
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: const Color(0xFFFFD6C9),
-                  child: const CircleAvatar(
-                    radius: 44,
-                    // backgroundImage: AssetImage(
-                    //   "assets/images/avatar.png",
-                    // ),
-                  ),
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: const Color(0xFFFFD6C9),
+                      child: const CircleAvatar(
+                        radius: 44,
+                        // backgroundImage: AssetImage("assets/images/avatar.png"),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Handle edit action here
+                        },
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(0xFFE87A5D),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 12),
