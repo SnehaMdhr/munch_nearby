@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/api/api_client.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
+import 'package:munch_nearby/core/services/storage/token_service.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/data/datasources/auth_datasource.dart';
 import 'package:munch_nearby/features/auth/data/models/auth_api_model.dart';
@@ -9,6 +10,7 @@ final authRemoteDatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
   return AuthRemoteDatasource(
     apiClient: ref.read(apiClientProvider), 
     userSessionService: ref.read(userSessionServiceProvider),
+    tokenService: ref.read(tokenServiceProvider),
   );
 });
 
@@ -16,12 +18,14 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
 
   final ApiClient _apiClient;
   final UserSessionService _userSessionService;
-
+  final TokenService _tokenService;
   AuthRemoteDatasource({
     required ApiClient apiClient,
     required UserSessionService userSessionService,
+    required TokenService tokenService,
   }): _apiClient = apiClient,
-      _userSessionService = userSessionService;
+      _userSessionService = userSessionService,
+      _tokenService = tokenService;
       
         @override
         Future<bool> isEmailExists(String email) {
@@ -52,7 +56,9 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
               } else {
                 // Handle the case where user.id is null
               }
-              return user;
+              final token = response.data["token"] as String?;
+              await _tokenService.saveToken(token!);
+              return user; 
             }
             return null;
         }

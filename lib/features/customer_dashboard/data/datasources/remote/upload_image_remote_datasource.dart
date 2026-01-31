@@ -24,24 +24,25 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
   })  : _apiClient = apiClient,
         _tokenService = tokenService;
 
- @override
+  @override
   Future<String> uploadImage(File image) async {
     final fileName = image.path.split("/").last;
     final formData = FormData.fromMap({
-      "itemPhoto": await MultipartFile.fromFile(image.path, filename: fileName),
+      "image": await MultipartFile.fromFile(image.path, filename: fileName),
     });
-    //get token from token service
 
     final token = await _tokenService.getToken();
-    final response = await _apiClient.uploadFile(
+  
+    final response = await _apiClient.put( 
       ApiEndpoints.uploadImage, 
-      formData: formData,
-      options:  Options(
-        headers:{
-          "Authorization": "Bearer $token"
-        },   
+      data: formData, 
+      options: Options(
+        headers: {
+          "Authorization": "Bearer $token",
+        },
       ),
     );
+    
     return response.data["success"];
   }
 }
