@@ -58,5 +58,11 @@ class AuthLocalDatasource implements IAuthLocalDatasource{
       return false;
     }
   }
+  
+  @override
+  Future<AuthHiveModel?> getCurrentUser() {
+    // TODO: implement getCurrentUser
+    throw UnimplementedError();
+  }
 
 }
