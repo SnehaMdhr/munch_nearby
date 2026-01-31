@@ -169,72 +169,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const SizedBox(height: 24),
 
                 // Avatar
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 48,
-                      backgroundColor: const Color(0xFFFFD6C9),
-                      child: CircleAvatar(
-                        radius: 44,
-                        backgroundImage: _selectedMedia.isNotEmpty
-                            ? FileImage(File(_selectedMedia.first.path))
-                            : null,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _pickMedia,
-                        child: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: const Color(0xFFE87A5D),
-                          child: const Icon(Icons.edit,
-                              size: 16, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 48,
+                  backgroundColor: const Color(0xFFFFD6C9),
+                  backgroundImage: _selectedMedia.isNotEmpty
+                      ? FileImage(File(_selectedMedia.first.path))
+                      : null,
                 ),
-
-                if (_selectedMedia.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Stack(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image: FileImage(File(_selectedMedia.first.path)),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedMedia.clear();
-                            });
-                          },
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(4),
-                            child: const Icon(Icons.close,
-                                color: Colors.white, size: 15),
-                          ),
-                        ),
-                      ),
-                    ],
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _pickMedia,
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: const Color(0xFFE87A5D),
+                      child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                    ),
                   ),
-                ],
+                ),
+                if (_selectedMedia.isNotEmpty)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedMedia.clear();
+                        });
+                      },
+                      child: CircleAvatar(
+                        radius: 12,
+                        backgroundColor: Colors.red,
+                        child: const Icon(Icons.close, size: 14, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
 
                 const SizedBox(height: 12),
                 const Text("Alex Doe",
