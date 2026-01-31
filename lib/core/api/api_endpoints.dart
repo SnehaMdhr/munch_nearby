@@ -39,6 +39,7 @@ class ApiEndpoints {
   static const String users = '/auth';
   static const String userLogin = '/auth/login';
   static const String userRegister = '/auth/register';
+  static String getCurrentUser = '/auth/whoami';
   static String userById(String id) => '/auth/$id';
   static String userPhoto(String id) => '/auth/$id/photo';
   static String uploadImage = "/auth/update-profile";

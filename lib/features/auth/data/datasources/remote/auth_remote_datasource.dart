@@ -76,6 +76,16 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
             }
             return model;
           }
+          
+            @override
+            Future<AuthApiModel?> getCurrentUser() async{
+              final response = await _apiClient.get(ApiEndpoints.getCurrentUser);
+                if (response.data == null) {
+                  return null;
+                }
+                final user = AuthApiModel.fromJson(response.data);
+                return user;
+            }
         
           
 }

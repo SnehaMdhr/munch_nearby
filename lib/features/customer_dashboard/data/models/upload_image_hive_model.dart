@@ -2,8 +2,6 @@ import 'package:hive/hive.dart';
 
 import 'package:munch_nearby/core/constants/hive_table_constant.dart';
 import 'package:munch_nearby/features/customer_dashboard/domain/entities/upload_image_entity.dart';
-import 'package:uuid/uuid.dart';
-
 part 'upload_image_hive_model.g.dart';
 
 @HiveType(typeId: HiveTableConstant.userTypeId)
