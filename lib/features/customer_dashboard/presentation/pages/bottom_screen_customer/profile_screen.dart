@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/api/api_endpoints.dart';
+import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
+import 'package:munch_nearby/features/customer_dashboard/presentation/state/upload_image_state.dart';
 import 'package:munch_nearby/features/customer_dashboard/presentation/view_model/upload_image_viewmodel.dart';
 import 'package:munch_nearby/features/customer_dashboard/presentation/widgets/profile_item.dart';
 import 'package:image_picker/image_picker.dart';
@@ -153,6 +156,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
+    final userSession = ref.watch(userSessionServiceProvider);
+    final uploadState = ref.watch(uploadImageViewModelProvider);
+
+    // Get profile picture URL from auth entity or user session
+    String? profilePictureUrl = authState.authEntity?.profilePicture ?? userSession.getCurrentUserProfilePicture();
+
+    // If upload was successful, construct the URL (assuming /uploads/ path)
+    if (uploadState.status == UploadImageStatus.loaded && uploadState.uploadPhotoName != null) {
+      profilePictureUrl = '${ApiEndpoints.baseUrl}/uploads/${uploadState.uploadPhotoName}';
+    }
+
     return SizedBox.expand(
       child: Container(
         color: const Color(0xFFFFF6F1),
@@ -169,54 +184,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const SizedBox(height: 24),
 
                 // Avatar
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: const Color(0xFFFFD6C9),
-                  backgroundImage: _selectedMedia.isNotEmpty
-                      ? FileImage(File(_selectedMedia.first.path))
-                      : null,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: _pickMedia,
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: const Color(0xFFE87A5D),
-                      child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: const Color(0xFFFFD6C9),
+                      backgroundImage: _selectedMedia.isNotEmpty
+                          ? FileImage(File(_selectedMedia.first.path))
+                          : (profilePictureUrl != null ? NetworkImage(profilePictureUrl) : null),
                     ),
-                  ),
-                ),
-                if (_selectedMedia.isNotEmpty)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedMedia.clear();
-                        });
-                      },
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.red,
-                        child: const Icon(Icons.close, size: 14, color: Colors.white),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _pickMedia,
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(0xFFE87A5D),
+                          child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                    if (_selectedMedia.isNotEmpty)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedMedia.clear();
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Colors.red,
+                            child: const Icon(Icons.close, size: 14, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
 
                 const SizedBox(height: 12),
-                const Text("Alex Doe",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  authState.authEntity?.name ?? userSession.getCurrentUserName() ?? "User",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 4),
-                const Text("alex.doe@email.com",
-                    style: TextStyle(fontSize: 13, color: Colors.black54)),
+                Text(
+                  authState.authEntity?.email ?? userSession.getCurrentUserEmail() ?? "user@email.com",
+                  style: const TextStyle(fontSize: 13, color: Colors.black54),
+                ),
                 const SizedBox(height: 30),
                 ProfileItem(icon: Icons.edit, title: "Edit Profile", onTap: () {}),
                 ProfileItem(icon: Icons.star_border, title: "My Reviews", onTap: () {}),
