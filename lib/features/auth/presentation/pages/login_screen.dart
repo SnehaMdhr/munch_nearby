@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
 import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
 import '../state/auth_state.dart';
@@ -71,29 +72,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     //   }
     // });
 
-    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
-      if (next.status == AuthStatus.error) {
-        SnackbarUtils.showError(
-          context,
-          next.errorMessage ?? "Login failed",
-          duration: const Duration(seconds: 1),
-        );
-      } else if (next.status == AuthStatus.authenticated) {
-        SnackbarUtils.showSuccess(
-          context,
-          "Login successful",
-          duration: const Duration(seconds: 1),
-        );
+   ref.listen<AuthState>(authViewModelProvider, (previous, next) async {
+    if (next.status == AuthStatus.error) {
+      SnackbarUtils.showError(
+        context,
+        next.errorMessage ?? "Login failed",
+        duration: const Duration(seconds: 1),
+      );
+    } 
+    else if (next.status == AuthStatus.authenticated && next.authEntity != null) {
 
-        // Always go to Customer Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const BottomNavigationBarForCustomer(),
-          ),
-        );
-      }
-    });
+      SnackbarUtils.showSuccess(
+        context,
+        "Login successful",
+        duration: const Duration(seconds: 1),
+      );
+
+      final user = next.authEntity!;
+
+      // ✅ Save session safely
+      await ref.read(userSessionServiceProvider).saveUserSession(
+        userId: user.userId ?? '',
+        email: user.email,
+        name: user.name,
+        username: user.username,
+        profilePicture: user.profilePicture,
+      );
+
+      // ✅ Navigate
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const BottomNavigationBarForCustomer(),
+        ),
+      );
+    }
+  });
+
 
 
     return Scaffold(

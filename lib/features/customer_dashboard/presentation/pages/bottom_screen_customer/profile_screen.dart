@@ -246,6 +246,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () async {
                       await ref.read(authViewModelProvider.notifier).logout();
+                      await ref.read(userSessionServiceProvider).clearSession();
                       if (context.mounted) {
                         Navigator.pushReplacement(
                           context,
