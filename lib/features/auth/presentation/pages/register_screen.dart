@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_text_form_field.dart';
 import '../state/auth_state.dart';
@@ -71,10 +72,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           "Registration successful",
           duration: const Duration(seconds: 1),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
+        AppRoutes.pushReplacement(context, const LoginScreen());
       }
     });
 
@@ -258,10 +256,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const Text("Have Account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        );
+                        AppRoutes.pushReplacement(context, const LoginScreen());
                       },
                       child: const Text(
                         "Login",

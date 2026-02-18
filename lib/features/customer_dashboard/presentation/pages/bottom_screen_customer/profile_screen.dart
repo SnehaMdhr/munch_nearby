@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/core/utils/snackbar_utils.dart';
@@ -248,11 +249,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       await ref.read(authViewModelProvider.notifier).logout();
                       await ref.read(userSessionServiceProvider).clearSession();
                       if (context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const LoginScreen()),
-                        );
+                        AppRoutes.pushReplacement(context, const LoginScreen());
                       }
                     },
                     icon: const Icon(Icons.logout, size: 18),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/login_screen.dart';
 import 'package:munch_nearby/features/onboarding/presentation/widgets/page_dot.dart';
 
@@ -18,10 +19,7 @@ class OnboardingScreen2 extends StatelessWidget {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
+                  AppRoutes.pushReplacement(context, const LoginScreen());
                 },
                 child: const Text(
                   "Skip",
@@ -85,10 +83,7 @@ class OnboardingScreen2 extends StatelessWidget {
 
             // Next button
             MyButton(onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-              );
+              AppRoutes.pushReplacement(context, const LoginScreen());
             }, text: "Get Started"),
 
             const SizedBox(height: 20),

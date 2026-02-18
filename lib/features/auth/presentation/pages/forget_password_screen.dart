@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
 
 import '../widgets/my_button.dart';
 import '../widgets/my_text_form_field.dart';
@@ -92,10 +93,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     const Text("Remembered Password?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
+                        AppRoutes.pushReplacement(context, const LoginScreen());
                       },
                       child: const Text(
                         "Login",

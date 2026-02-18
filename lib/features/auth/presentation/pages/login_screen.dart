@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
 import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
@@ -100,12 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
 
       // ✅ Navigate
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const BottomNavigationBarForCustomer(),
-        ),
-      );
+      AppRoutes.pushReplacement(context, const BottomNavigationBarForCustomer());
     }
   });
 
@@ -192,12 +188,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ForgetPasswordScreen(),
-                        ),
-                      );
+                      AppRoutes.pushReplacement(context, const ForgetPasswordScreen());
                     },
                     child: const Text(
                       "Forgot Password?",
@@ -248,12 +239,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Text("Don’t have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
-                        );
+                        AppRoutes.pushReplacement(context, const RegisterScreen());
                       },
                       child: const Text(
                         "Create Account",
