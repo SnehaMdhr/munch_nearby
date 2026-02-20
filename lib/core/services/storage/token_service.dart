@@ -15,7 +15,11 @@ class TokenService {
   //save token : Secure storage
 
   Future <void> saveToken(String token) async{
-    await _prefs.setString(_tokenKey, token);
+    final cleanedToken = token.trim().replaceFirst(
+      RegExp(r'^Bearer\s+', caseSensitive: false),
+      '',
+    );
+    await _prefs.setString(_tokenKey, cleanedToken);
   }
 
   //get token

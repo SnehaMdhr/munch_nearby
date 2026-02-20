@@ -37,13 +37,19 @@ class AuthApiModel {
 
   //fromJson
   factory AuthApiModel.fromJson(Map<String, dynamic> json) {
+    final profilePicture =
+        json["profilePicture"] as String? ??
+        json["photo"] as String? ??
+        json["avatar"] as String? ??
+        json["image"] as String?;
+
     return AuthApiModel(
-      id: json["id"] as String?,
+      id: json["id"] as String? ?? json["_id"] as String?,
       name: json["name"] as String? ?? "",
       email: json["email"] as String? ?? "",
       // role: json["role"] as String? ?? "customer",
       username: json["username"] as String?,
-      profilePicture: json["profilePicture"] as String?,
+      profilePicture: profilePicture,
     );
   }
 

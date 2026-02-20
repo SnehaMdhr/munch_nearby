@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/services/storage/token_service.dart';
+import 'package:munch_nearby/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/logout_usecase.dart';
 
 import '../../domain/usecases/login_usecase.dart';
@@ -11,12 +13,14 @@ final authViewModelProvider = NotifierProvider<AuthViewModel, AuthState>(
 class AuthViewModel extends Notifier<AuthState>{
   late final RegisterUsecase _registerUsecase;
   late final LoginUsecase _loginUsecase;
+  late final GetCurrentUserUsecase _getCurrentUserUsecase;
   late final LogoutUsecase _logoutUsecase;
 
   @override
   AuthState build() {
     _registerUsecase = ref.read(registerUsecaseProvider);
     _loginUsecase= ref.read(loginUsecaseProvider);
+    _getCurrentUserUsecase = ref.read(getCurrentUserUsecaseProvider);
     _logoutUsecase = ref.read(logoutUsecaseProvider);
     return AuthState();
   }
@@ -93,6 +97,23 @@ class AuthViewModel extends Notifier<AuthState>{
       (success) => state = state.copyWith(
         status: AuthStatus.unauthenticated,
         authEntity: null,
+      ),
+    );
+  }
+
+  Future<void> fetchCurrentUser() async {
+    final token = ref.read(tokenServiceProvider).getToken();
+    if (token == null || token.trim().isEmpty) {
+      return;
+    }
+
+    final result = await _getCurrentUserUsecase();
+
+    result.fold(
+      (failure) => state = state.copyWith(errorMessage: failure.message),
+      (authEntity) => state = state.copyWith(
+        status: AuthStatus.authenticated,
+        authEntity: authEntity,
       ),
     );
   }

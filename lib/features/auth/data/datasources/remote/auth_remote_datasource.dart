@@ -80,11 +80,22 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
             @override
             Future<AuthApiModel?> getCurrentUser() async{
               final response = await _apiClient.get(ApiEndpoints.getCurrentUser);
-                if (response.data == null) {
-                  return null;
+              if (response.data == null) {
+                return null;
+              }
+
+              final payload = response.data;
+
+              if (payload is Map<String, dynamic>) {
+                if (payload['data'] is Map<String, dynamic>) {
+                  return AuthApiModel.fromJson(
+                    payload['data'] as Map<String, dynamic>,
+                  );
                 }
-                final user = AuthApiModel.fromJson(response.data);
-                return user;
+                return AuthApiModel.fromJson(payload);
+              }
+
+              return null;
             }
         
           

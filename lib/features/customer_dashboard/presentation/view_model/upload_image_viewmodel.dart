@@ -31,10 +31,18 @@ class UploadImageViewmodel extends Notifier<UploadImageState> {
         );
       },
       (imageName){
-        state = state.copyWith(
-          status: UploadImageStatus.loaded,
-          uploadPhotoName: imageName,
-        );
+        if (imageName.isEmpty) {
+          state = state.copyWith(
+            status: UploadImageStatus.loaded,
+            errorMessage: null,
+          );
+        } else {
+          state = state.copyWith(
+            status: UploadImageStatus.loaded,
+            uploadPhotoName: imageName,
+            errorMessage: null,
+          );
+        }
       },);
   }
   void clearError() {

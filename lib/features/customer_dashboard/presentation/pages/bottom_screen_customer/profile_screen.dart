@@ -25,6 +25,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final List<XFile> _selectedMedia = [];
   final ImagePicker _imagePicker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref.read(authViewModelProvider.notifier).fetchCurrentUser(),
+    );
+    ref.listenManual(uploadImageViewModelProvider, (previous, next) {
+      if (!mounted) return;
+      if (next.status == UploadImageStatus.loaded) {
+        ref.read(authViewModelProvider.notifier).fetchCurrentUser();
+      }
+      if (next.status == UploadImageStatus.error &&
+          next.errorMessage != null &&
+          next.errorMessage!.isNotEmpty) {
+        SnackbarUtils.showError(context, next.errorMessage!);
+      }
+    });
+  }
+
   Future<bool> _userSangaPermissionMagu(Permission permission) async {
     final status = await permission.status;
     if (status.isGranted) return true;
@@ -162,11 +181,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final uploadState = ref.watch(uploadImageViewModelProvider);
 
     // Get profile picture URL from auth entity or user session
-    String? profilePictureUrl = authState.authEntity?.profilePicture ?? userSession.getCurrentUserProfilePicture();
+    String? profilePictureUrl = _normalizeProfileImageUrl(
+      authState.authEntity?.profilePicture ??
+          userSession.getCurrentUserProfilePicture(),
+    );
 
-    // If upload was successful, construct the URL (assuming /uploads/ path)
-    if (uploadState.status == UploadImageStatus.loaded && uploadState.uploadPhotoName != null) {
-      profilePictureUrl = '${ApiEndpoints.baseUrl}/uploads/${uploadState.uploadPhotoName}';
+    // If upload returns photo name, construct uploaded URL immediately
+    if (uploadState.status == UploadImageStatus.loaded &&
+        uploadState.uploadPhotoName != null &&
+        uploadState.uploadPhotoName!.isNotEmpty) {
+      profilePictureUrl = _normalizeProfileImageUrl(
+        '/uploads/${uploadState.uploadPhotoName}',
+      );
     }
 
     return SizedBox.expand(
@@ -190,9 +216,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     CircleAvatar(
                       radius: 48,
                       backgroundColor: const Color(0xFFFFD6C9),
-                      backgroundImage: _selectedMedia.isNotEmpty
-                          ? FileImage(File(_selectedMedia.first.path))
-                          : (profilePictureUrl != null ? NetworkImage(profilePictureUrl) : null),
+                      backgroundImage: (profilePictureUrl != null &&
+                          profilePictureUrl.isNotEmpty)
+                        ? NetworkImage(profilePictureUrl)
+                        : null,
+                      child: (profilePictureUrl == null ||
+                          profilePictureUrl.isEmpty)
+                        ? const Icon(Icons.person, size: 40)
+                        : null,
                     ),
                     Positioned(
                       bottom: 0,
@@ -206,23 +237,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                     ),
-                    if (_selectedMedia.isNotEmpty)
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedMedia.clear();
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.red,
-                            child: const Icon(Icons.close, size: 14, color: Colors.white),
-                          ),
-                        ),
-                      ),
                   ],
                 ),
 
@@ -263,5 +277,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  String? _normalizeProfileImageUrl(String? rawUrl) {
+    if (rawUrl == null || rawUrl.trim().isEmpty) {
+      return null;
+    }
+
+    final value = rawUrl.trim();
+
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+
+    final baseUri = Uri.parse(ApiEndpoints.baseUrl);
+    final origin = '${baseUri.scheme}://${baseUri.authority}';
+
+    if (value.startsWith('/')) {
+      return '$origin$value';
+    }
+
+    if (value.startsWith('uploads/')) {
+      return '$origin/$value';
+    }
+
+    return '$origin/uploads/$value';
   }
 }
