@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
+import 'package:munch_nearby/features/menu/presentation/pages/menu_screen.dart';
 
 class RestaurantCard extends StatelessWidget {
+  final String restaurantId;
   final String imageUrl;
   final String name;
   final String address;
@@ -10,6 +13,7 @@ class RestaurantCard extends StatelessWidget {
 
   const RestaurantCard({
     super.key,
+    required this.restaurantId,
     required this.imageUrl,
     required this.name,
     required this.address,
@@ -134,6 +138,26 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                ElevatedButton.icon(
+                      onPressed: () {
+                        AppRoutes.push(
+                          context,
+                          MenuScreen(
+                            restaurantId: restaurantId,
+                            restaurantName: name,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.restaurant_menu),
+                      label: const Text("View Menu"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
               ],
             ),
           ),

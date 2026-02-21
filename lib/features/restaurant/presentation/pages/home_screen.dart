@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/features/restaurant/presentation/view_model/restaurant_view_model.dart';
 import 'package:munch_nearby/features/restaurant/presentation/state/restaurant_state.dart';
-import 'package:munch_nearby/features/restaurant_owner_dashboard/presentation/pages/bottom_screen_restaurant_owner/menu_screen.dart';
 import '../widgets/restaurant_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -66,6 +65,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: RestaurantCard(
+              restaurantId: restaurant.id,
               imageUrl: restaurant.imageUrl ?? "",
               name: restaurant.name,
               address: restaurant.address,
