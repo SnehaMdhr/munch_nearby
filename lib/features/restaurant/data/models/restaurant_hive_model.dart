@@ -47,9 +47,6 @@ class RestaurantHiveModel extends HiveObject {
     required this.owner,
   }) : id = id ?? const Uuid().v4();
 
-  /// =========================
-  /// Entity → Hive
-  /// =========================
   factory RestaurantHiveModel.fromEntity(RestaurantEntity entity) {
     return RestaurantHiveModel(
       id: entity.id,
@@ -63,10 +60,6 @@ class RestaurantHiveModel extends HiveObject {
       owner: entity.owner,
     );
   }
-
-  /// =========================
-  /// Hive → Entity
-  /// =========================
   RestaurantEntity toEntity() {
     return RestaurantEntity(
       id: id,
@@ -80,10 +73,6 @@ class RestaurantHiveModel extends HiveObject {
       owner: owner,
     );
   }
-
-  /// =========================
-  /// Hive List → Entity List
-  /// =========================
   static List<RestaurantEntity> toEntityList(
       List<RestaurantHiveModel> models) {
     return models.map((e) => e.toEntity()).toList();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_bar_title.dart';
 import 'bottom_screen_customer/favourite_screen.dart';
-import 'bottom_screen_customer/home_screen.dart';
+import '../../../restaurant/presentation/pages/home_screen.dart';
 import 'bottom_screen_customer/map_screen.dart';
 import 'bottom_screen_customer/profile_screen.dart';
 

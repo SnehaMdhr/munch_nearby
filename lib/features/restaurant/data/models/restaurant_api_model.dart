@@ -24,9 +24,6 @@ class RestaurantApiModel {
     required this.owner,
   });
 
-  // =========================
-  // To JSON
-  // =========================
   Map<String, dynamic> toJson() {
     return {
       "_id": id,
@@ -40,10 +37,6 @@ class RestaurantApiModel {
       "owner": owner,
     };
   }
-
-  // =========================
-  // From JSON
-  // =========================
   factory RestaurantApiModel.fromJson(Map<String, dynamic> json) {
   return RestaurantApiModel(
     id: json["_id"] is Map
@@ -64,10 +57,6 @@ class RestaurantApiModel {
     owner: json["owner"]?.toString() ?? "",
   );
 }
-
-  // =========================
-  // To Entity
-  // =========================
   RestaurantEntity toEntity() {
     return RestaurantEntity(
       id: id,
@@ -82,9 +71,6 @@ class RestaurantApiModel {
     );
   }
 
-  // =========================
-  // From Entity
-  // =========================
   factory RestaurantApiModel.fromEntity(RestaurantEntity entity) {
     return RestaurantApiModel(
       id: entity.id,
@@ -98,18 +84,10 @@ class RestaurantApiModel {
       owner: entity.owner,
     );
   }
-
-  // =========================
-  // To Entity List
-  // =========================
   static List<RestaurantEntity> toEntityList(
       List<RestaurantApiModel> models) {
     return models.map((model) => model.toEntity()).toList();
   }
-
-  // =========================
-  // To Hive Model
-  // =========================
   RestaurantHiveModel toHiveModel() {
     return RestaurantHiveModel(
       id: id,

@@ -37,9 +37,7 @@ class RestaurantRepositoryImpl implements IRestaurantRepository {
         _remoteDataSource = remoteDataSource,
         _networkInfo = networkInfo;
 
-  // =====================================================
-  // GET ALL RESTAURANTS (REMOTE FIRST WITH LOCAL FALLBACK)
-  // =====================================================
+
   @override
   Future<Either<Failure, List<RestaurantEntity>>>
       getAllRestaurants() async {
@@ -56,7 +54,6 @@ class RestaurantRepositoryImpl implements IRestaurantRepository {
 
         await _localDataSource.cacheRestaurants(hiveModels);
 
-        // Convert to entities
         final entities = remoteData
             .map((RestaurantApiModel apiModel) =>
                 apiModel.toEntity())
@@ -76,7 +73,6 @@ class RestaurantRepositoryImpl implements IRestaurantRepository {
         return Left(ApiFailure(message: e.toString()));
       }
     } else {
-      // Offline fallback
       try {
         final localData =
             await _localDataSource.getRestaurants();
@@ -103,9 +99,6 @@ class RestaurantRepositoryImpl implements IRestaurantRepository {
     }
   }
 
-  // =====================================================
-  // FORCE REFRESH (REMOTE ONLY)
-  // =====================================================
   @override
   Future<Either<Failure, List<RestaurantEntity>>>
       refreshRestaurants() async {
