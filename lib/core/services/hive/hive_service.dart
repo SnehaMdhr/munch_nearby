@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:munch_nearby/features/favourite/data/models/favourite_hive_model.dart';
 import 'package:munch_nearby/features/menu/data/models/menu_hive_model.dart';
+import 'package:munch_nearby/features/review/data/models/review_hive_model.dart';
 import '../../../features/auth/data/models/auth_hive_model.dart';
 import '../../../features/restaurant/data/models/restaurant_hive_model.dart';
 import '../../constants/hive_table_constant.dart';
@@ -37,6 +38,10 @@ class HiveService {
     if (!Hive.isAdapterRegistered(HiveTableConstant.favouriteTypeId)) {
       Hive.registerAdapter(FavouriteHiveModelAdapter());
     }
+
+    if (!Hive.isAdapterRegistered(HiveTableConstant.reviewTypeId)) {
+      Hive.registerAdapter(ReviewHiveModelAdapter());
+    }
     
   }
   Future<void> openBoxes() async {
@@ -51,6 +56,9 @@ class HiveService {
 
     await Hive.openBox<FavouriteHiveModel>(
       HiveTableConstant.favouriteTable);
+
+    await Hive.openBox<ReviewHiveModel>(
+      HiveTableConstant.reviewTable);
   }
 
   Future<void> close() async {
@@ -96,6 +104,15 @@ class HiveService {
     }
     return Hive.box<FavouriteHiveModel>(
         HiveTableConstant.favouriteTable);
+  }
+
+  Box<ReviewHiveModel> get _reviewBox {
+    if (!Hive.isBoxOpen(HiveTableConstant.reviewTable)) {
+      throw Exception(
+          'Hive box ${HiveTableConstant.reviewTable} is not open');
+    }
+    return Hive.box<ReviewHiveModel>(
+        HiveTableConstant.reviewTable);
   }
 
   // USER QUERIES
@@ -211,6 +228,38 @@ class HiveService {
 
   Future<void> clearFavourites() async {
     await _favouriteBox.clear();
+  }
+
+
+  // REVIEW QUERIES
+  Future<void> saveReview(ReviewHiveModel model) async {
+    await _reviewBox.put(model.reviewId, model);
+  }
+
+  List<ReviewHiveModel> getReviewsByRestaurant(String restaurantId) {
+    return _reviewBox.values
+        .where((review) => review.restaurantId == restaurantId)
+        .toList();
+  }
+
+  List<ReviewHiveModel> getReviewsByCustomer(String customerId) {
+    return _reviewBox.values
+        .where((review) => review.customerId == customerId)
+        .toList();
+  }
+
+  Future<void> deleteReview(String reviewId) async {
+    await _reviewBox.delete(reviewId);
+  }
+
+  Future<void> cacheReviews(List<ReviewHiveModel> reviews) async {
+    for (var review in reviews) {
+      await _reviewBox.put(review.reviewId, review);
+    }
+  }
+
+  Future<void> clearReviews() async {
+    await _reviewBox.clear();
   }
   
 }

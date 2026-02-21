@@ -51,4 +51,10 @@ class ApiEndpoints {
   static const String addFavourites ="/favourite";
   static const String getFavourites ="/favourite/my";
   static const String removeFavourites ="/favourite";
+
+  static const String getRestaurantReviews = "/review/restaurant";
+  static const String createReview = "/review/create";
+  static const String deleteReview = "/review/delete";
+  static const String updateReview = "/review/update";
+  static const String getOwnerReviews = "/review/owner/my-reviews";
 }
