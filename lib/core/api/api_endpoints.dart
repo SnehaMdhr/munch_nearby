@@ -45,4 +45,6 @@ class ApiEndpoints {
   static String uploadImage = "/auth/update-profile";
 
   static const String restaurants = '/restaurant';
+
+  static const String getMenuByRestaurantId ="/menu/restaurant/";
 }

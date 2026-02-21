@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+import 'package:munch_nearby/features/menu/data/models/menu_hive_model.dart';
 import '../../../features/auth/data/models/auth_hive_model.dart';
 import '../../../features/restaurant/data/models/restaurant_hive_model.dart';
 import '../../constants/hive_table_constant.dart';
@@ -27,22 +28,30 @@ class HiveService {
     if (!Hive.isAdapterRegistered(HiveTableConstant.restaurantTypeId)) {
       Hive.registerAdapter(RestaurantHiveModelAdapter());
     }
+
+    if (!Hive.isAdapterRegistered(HiveTableConstant.menuTypeId)) {
+      Hive.registerAdapter(MenuHiveModelAdapter());
+    }
+    
   }
   Future<void> openBoxes() async {
     await Hive.openBox<AuthHiveModel>(
-        HiveTableConstant.userTable);
+      HiveTableConstant.userTable);
 
     await Hive.openBox<RestaurantHiveModel>(
-        HiveTableConstant.restaurantTable);
+      HiveTableConstant.restaurantTable);
+    
+    await Hive.openBox<MenuHiveModel>(
+      HiveTableConstant.menuTable);
   }
 
   Future<void> close() async {
     await Hive.close();
   }
 
-  // =====================================================
+
   // USER BOX
-  // =====================================================
+ 
   Box<AuthHiveModel> get _authBox {
     if (!Hive.isBoxOpen(HiveTableConstant.userTable)) {
       throw Exception(
@@ -52,9 +61,7 @@ class HiveService {
         HiveTableConstant.userTable);
   }
 
-  // =====================================================
   // RESTAURANT BOX
-  // =====================================================
   Box<RestaurantHiveModel> get _restaurantBox {
     if (!Hive.isBoxOpen(HiveTableConstant.restaurantTable)) {
       throw Exception(
@@ -64,9 +71,17 @@ class HiveService {
         HiveTableConstant.restaurantTable);
   }
 
-  // =====================================================
+  //Menu box
+  Box<MenuHiveModel> get _menuBox {
+    if (!Hive.isBoxOpen(HiveTableConstant.menuTable)) {
+      throw Exception(
+          'Hive box ${HiveTableConstant.menuTable} is not open');
+    }
+    return Hive.box<MenuHiveModel>(
+        HiveTableConstant.menuTable);
+  }
+
   // USER QUERIES
-  // =====================================================
   Future<AuthHiveModel> registerUser(
       AuthHiveModel model) async {
     await _authBox.put(model.userId, model);
@@ -95,11 +110,8 @@ class HiveService {
     return users.isNotEmpty;
   }
 
-  // =====================================================
-  // RESTAURANT QUERIES
-  // =====================================================
 
-  /// Save all restaurants (replace old)
+  // RESTAURANT QUERIES
   Future<void> cacheRestaurants(
       List<RestaurantHiveModel> restaurants) async {
 
@@ -124,4 +136,29 @@ class HiveService {
   RestaurantHiveModel? getRestaurantById(String id) {
     return _restaurantBox.get(id);
   }
+
+
+  //Menu Queries 
+
+   Future<void> cacheMenus(
+      List<MenuHiveModel> menus) async {
+
+    for (var menu in menus) {
+      await _menuBox.put(menu.id, menu);
+    }
+  }
+
+  List<MenuHiveModel> getMenusByRestaurant(
+      String restaurantId) {
+
+    return _menuBox.values
+        .where((menu) =>
+            menu.restaurantId == restaurantId)
+        .toList();
+  }
+
+  Future<void> clearMenus() async {
+    await _menuBox.clear();
+  }
+  
 }
