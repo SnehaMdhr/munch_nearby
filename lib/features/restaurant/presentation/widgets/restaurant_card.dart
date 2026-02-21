@@ -5,6 +5,7 @@ import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_mod
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
 import 'package:munch_nearby/features/menu/presentation/pages/menu_screen.dart';
+import 'package:munch_nearby/features/review/presentation/pages/review_screen.dart';
 
 class RestaurantCard extends StatelessWidget {
   final String restaurantId;
@@ -176,42 +177,76 @@ class RestaurantCard extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
-                /// 🗺 Map Button
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: OutlinedButton.icon(
+                /// Buttons Row
+                Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          // Later use url_launcher to open mapLink
+                        },
+                        icon: const Icon(Icons.map),
+                        label: const Text("View Map"),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          AppRoutes.push(
+                            context,
+                            MenuScreen(
+                              restaurantId: restaurantId,
+                              restaurantName: name,
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.restaurant_menu),
+                        label: const Text("View Menu"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
                     onPressed: () {
-                      // Later use url_launcher to open mapLink
+                      AppRoutes.push(
+                        context,
+                        ReviewScreen(
+                          restaurantId: restaurantId,
+                          restaurantName: name,
+                        ),
+                      );
                     },
-                    icon: const Icon(Icons.map),
-                    label: const Text("View Map"),
-                    style: OutlinedButton.styleFrom(
+                    icon: const Icon(Icons.rate_review, color: Colors.white),
+                    label: const Text(
+                      "View Reviews",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ),
-
-                ElevatedButton.icon(
-                      onPressed: () {
-                        AppRoutes.push(
-                          context,
-                          MenuScreen(
-                            restaurantId: restaurantId,
-                            restaurantName: name,
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.restaurant_menu),
-                      label: const Text("View Menu"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
               ],
             ),
           ),
