@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
+import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
@@ -27,8 +28,35 @@ class RestaurantCard extends StatelessWidget {
     required this.category,
   });
 
+  String? _normalizeRestaurantImageUrl(String rawUrl) {
+    if (rawUrl.trim().isEmpty || rawUrl.trim().toLowerCase() == 'null') {
+      return null;
+    }
+
+    final value = rawUrl.trim();
+
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+
+    final baseUri = Uri.parse(ApiEndpoints.baseUrl);
+    final origin = '${baseUri.scheme}://${baseUri.authority}';
+
+    if (value.startsWith('/')) {
+      return '$origin$value';
+    }
+
+    if (value.startsWith('uploads/')) {
+      return '$origin/$value';
+    }
+
+    return '$origin/uploads/$value';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final normalizedImageUrl = _normalizeRestaurantImageUrl(imageUrl);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -51,25 +79,34 @@ class RestaurantCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
-                child: Image.network(
-                  imageUrl,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Image.asset(
-                    "assets/images/chiya.png",
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: normalizedImageUrl == null
+                    ? Image.asset(
+                        'assets/images/chiya.png',
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        normalizedImageUrl,
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          'assets/images/chiya.png',
+                          height: 180,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
               ),
               Positioned(
                 top: 10,
                 right: 10,
                 child: Consumer(
                   builder: (context, ref, _) {
-                    final favouriteState = ref.watch(favouriteViewModelProvider);
+                    final favouriteState = ref.watch(
+                      favouriteViewModelProvider,
+                    );
                     final isFavourite = favouriteState.favourites.any(
                       (item) => item.restaurantId == restaurantId,
                     );
@@ -91,8 +128,9 @@ class RestaurantCard extends StatelessWidget {
                           restaurantId: restaurantId,
                         );
 
-                        final favouriteNotifier =
-                            ref.read(favouriteViewModelProvider.notifier);
+                        final favouriteNotifier = ref.read(
+                          favouriteViewModelProvider.notifier,
+                        );
 
                         await favouriteNotifier.toggleFavourite(entity);
                         await favouriteNotifier.loadFavourites();
@@ -119,7 +157,6 @@ class RestaurantCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 /// Name
                 Text(
                   name,
@@ -145,11 +182,7 @@ class RestaurantCard extends StatelessWidget {
                 /// Address
                 Row(
                   children: [
-                    const Icon(
-                      Icons.location_on,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
+                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -170,9 +203,7 @@ class RestaurantCard extends StatelessWidget {
                   description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(fontSize: 14),
                 ),
 
                 const SizedBox(height: 14),
@@ -240,7 +271,10 @@ class RestaurantCard extends StatelessWidget {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

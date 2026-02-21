@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/features/restaurant/domain/entities/restaurant_entity.dart';
 
 class FavouriteCard extends StatelessWidget {
@@ -10,6 +11,32 @@ class FavouriteCard extends StatelessWidget {
     required this.restaurant,
     required this.onRemove,
   });
+
+  String? _normalizeRestaurantImageUrl(String rawUrl) {
+    if (rawUrl.trim().isEmpty || rawUrl.trim().toLowerCase() == 'null') {
+      return null;
+    }
+
+    final value = rawUrl.trim();
+
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+
+    final baseUri = Uri.parse(ApiEndpoints.baseUrl);
+    final origin = '${baseUri.scheme}://${baseUri.authority}';
+
+    if (value.startsWith('/')) {
+      return '$origin$value';
+    }
+
+    if (value.startsWith('uploads/')) {
+      return '$origin/$value';
+    }
+
+    return '$origin/uploads/$value';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +62,7 @@ class FavouriteCard extends StatelessWidget {
               bottomLeft: Radius.circular(12),
             ),
             child: Image.network(
-              restaurant.imageUrl ?? '',
+              _normalizeRestaurantImageUrl(restaurant.imageUrl ?? '') ?? '',
               width: 100,
               height: 100,
               fit: BoxFit.cover,
