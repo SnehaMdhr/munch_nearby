@@ -1,4 +1,6 @@
-class RestaurantEntity {
+import 'package:equatable/equatable.dart';
+
+class RestaurantEntity extends Equatable {
   final String id;
   final String name;
   final String address;
@@ -21,7 +23,7 @@ class RestaurantEntity {
     required this.owner,
   });
 
-    @override
+  @override
   List<Object?> get props => [
     id, name, address, mapLink, contactNumber, category, description, imageUrl, owner
   ];
