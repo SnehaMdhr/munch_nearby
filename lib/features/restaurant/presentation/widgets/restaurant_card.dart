@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
+import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
+import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
+import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
 import 'package:munch_nearby/features/menu/presentation/pages/menu_screen.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -40,25 +44,75 @@ class RestaurantCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
-            ),
-            child: Image.network(
-              imageUrl,
-              height: 180,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Image.asset(
-                "assets/images/chiya.png",
-                height: 180,
-                width: double.infinity,
-                fit: BoxFit.cover,
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: Image.network(
+                  imageUrl,
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Image.asset(
+                    "assets/images/chiya.png",
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-          ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final favouriteState = ref.watch(favouriteViewModelProvider);
+                    final isFavourite = favouriteState.favourites.any(
+                      (item) => item.restaurantId == restaurantId,
+                    );
 
-          /// 🔹 Content
+                    return GestureDetector(
+                      onTap: () async {
+                        final authState = ref.read(authViewModelProvider);
+                        final customerId = authState.authEntity?.userId;
+
+                        if (customerId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Please login first")),
+                          );
+                          return;
+                        }
+
+                        final entity = FavouriteEntity(
+                          customerId: customerId,
+                          restaurantId: restaurantId,
+                        );
+
+                        final favouriteNotifier =
+                            ref.read(favouriteViewModelProvider.notifier);
+
+                        await favouriteNotifier.toggleFavourite(entity);
+                        await favouriteNotifier.loadFavourites();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.favorite,
+                          color: isFavourite ? Colors.red : Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
