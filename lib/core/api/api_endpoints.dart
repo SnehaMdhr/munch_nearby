@@ -47,4 +47,8 @@ class ApiEndpoints {
   static const String restaurants = '/restaurant';
 
   static const String getMenuByRestaurantId ="/menu/restaurant/";
+
+  static const String addFavourites ="/favourite";
+  static const String getFavourites ="/favourite/my";
+  static const String removeFavourites ="/favourite";
 }

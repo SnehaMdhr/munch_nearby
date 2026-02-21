@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+import 'package:munch_nearby/features/favourite/data/models/favourite_hive_model.dart';
 import 'package:munch_nearby/features/menu/data/models/menu_hive_model.dart';
 import '../../../features/auth/data/models/auth_hive_model.dart';
 import '../../../features/restaurant/data/models/restaurant_hive_model.dart';
@@ -32,6 +33,10 @@ class HiveService {
     if (!Hive.isAdapterRegistered(HiveTableConstant.menuTypeId)) {
       Hive.registerAdapter(MenuHiveModelAdapter());
     }
+
+    if (!Hive.isAdapterRegistered(HiveTableConstant.favouriteTypeId)) {
+      Hive.registerAdapter(FavouriteHiveModelAdapter());
+    }
     
   }
   Future<void> openBoxes() async {
@@ -43,6 +48,9 @@ class HiveService {
     
     await Hive.openBox<MenuHiveModel>(
       HiveTableConstant.menuTable);
+
+    await Hive.openBox<FavouriteHiveModel>(
+      HiveTableConstant.favouriteTable);
   }
 
   Future<void> close() async {
@@ -79,6 +87,15 @@ class HiveService {
     }
     return Hive.box<MenuHiveModel>(
         HiveTableConstant.menuTable);
+  }
+
+  Box<FavouriteHiveModel> get _favouriteBox {
+  if (!Hive.isBoxOpen(HiveTableConstant.favouriteTable)) {
+    throw Exception(
+        'Hive box ${HiveTableConstant.favouriteTable} is not open');
+    }
+    return Hive.box<FavouriteHiveModel>(
+        HiveTableConstant.favouriteTable);
   }
 
   // USER QUERIES
@@ -159,6 +176,41 @@ class HiveService {
 
   Future<void> clearMenus() async {
     await _menuBox.clear();
+  }
+
+
+
+  // FAVOURITE QUERIES
+  Future<void> addToFavourite(FavouriteHiveModel model) async {
+    await _favouriteBox.put(model.favouriteId, model);
+  }
+
+  Future<void> removeFromFavourite(String restaurantId) async {
+    final favourites = _favouriteBox.values
+        .where((fav) => fav.restaurantId == restaurantId)
+        .toList();
+
+    for (var fav in favourites) {
+      await fav.delete();
+    }
+  }
+
+  List<FavouriteHiveModel> getFavouritesByUser(String customerId) {
+    return _favouriteBox.values
+        .where((fav) => fav.customerId == customerId)
+        .toList();
+  }
+
+  bool isFavourite(String customerId, String restaurantId) {
+    return _favouriteBox.values.any(
+      (fav) =>
+          fav.customerId == customerId &&
+          fav.restaurantId == restaurantId,
+    );
+  }
+
+  Future<void> clearFavourites() async {
+    await _favouriteBox.clear();
   }
   
 }
