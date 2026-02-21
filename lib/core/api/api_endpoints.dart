@@ -43,4 +43,6 @@ class ApiEndpoints {
   static String userById(String id) => '/auth/$id';
   static String userPhoto(String id) => '/auth/$id/photo';
   static String uploadImage = "/auth/update-profile";
+
+  static const String restaurants = '/restaurant';
 }
