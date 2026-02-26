@@ -34,6 +34,10 @@ class RestaurantHiveModel extends HiveObject {
 
   @HiveField(8)
   final String owner;
+  @HiveField(9)
+  final double? latitude;
+  @HiveField(10)
+  final double? longitude;
 
   RestaurantHiveModel({
     String? id,
@@ -45,6 +49,8 @@ class RestaurantHiveModel extends HiveObject {
     this.description,
     this.imageUrl,
     required this.owner,
+    this.latitude,
+    this.longitude
   }) : id = id ?? const Uuid().v4();
 
   factory RestaurantHiveModel.fromEntity(RestaurantEntity entity) {
@@ -58,6 +64,8 @@ class RestaurantHiveModel extends HiveObject {
       description: entity.description,
       imageUrl: entity.imageUrl,
       owner: entity.owner,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
     );
   }
   RestaurantEntity toEntity() {
@@ -71,6 +79,8 @@ class RestaurantHiveModel extends HiveObject {
       description: description,
       imageUrl: imageUrl,
       owner: owner,
+      latitude: latitude,
+      longitude: longitude,
     );
   }
   static List<RestaurantEntity> toEntityList(

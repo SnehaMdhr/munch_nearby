@@ -26,13 +26,15 @@ class RestaurantHiveModelAdapter extends TypeAdapter<RestaurantHiveModel> {
       description: fields[6] as String?,
       imageUrl: fields[7] as String?,
       owner: fields[8] as String,
+      latitude: fields[9] as double?,
+      longitude: fields[10] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RestaurantHiveModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class RestaurantHiveModelAdapter extends TypeAdapter<RestaurantHiveModel> {
       ..writeByte(7)
       ..write(obj.imageUrl)
       ..writeByte(8)
-      ..write(obj.owner);
+      ..write(obj.owner)
+      ..writeByte(9)
+      ..write(obj.latitude)
+      ..writeByte(10)
+      ..write(obj.longitude);
   }
 
   @override

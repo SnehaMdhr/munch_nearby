@@ -86,7 +86,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     return const SizedBox();
   }
 
-  // 🔥 Group by Category
   Map<String, List<MenuEntity>> _groupByCategory(
       List<MenuEntity> menus) {
     final Map<String, List<MenuEntity>> map = {};
@@ -101,7 +100,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     return map;
   }
 
-  // 🎯 Category Header
   Widget _buildCategoryHeader(String category) {
     return Text(
       category,
@@ -112,7 +110,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  // 🍔 Menu Item Card
   Widget _buildMenuItemCard(MenuEntity menu) {
     return Card(
       elevation: 3,
