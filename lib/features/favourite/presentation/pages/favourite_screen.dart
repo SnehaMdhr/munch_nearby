@@ -33,7 +33,6 @@ class _FavouriteScreenState extends ConsumerState<FavouriteScreen> {
     final favouriteState = ref.watch(favouriteViewModelProvider);
     final restaurantState = ref.watch(restaurantViewModelProvider);
 
-    // Combine the lists: Get full restaurant details for each favorite ID
     final favRestaurants = restaurantState.restaurants.where((res) {
       return favouriteState.favourites.any((fav) => fav.restaurantId == res.id);
     }).toList();
@@ -52,7 +51,6 @@ class _FavouriteScreenState extends ConsumerState<FavouriteScreen> {
                 return FavouriteCard(
                   restaurant: restaurant,
                   onRemove: () {
-                    // This will trigger the toggle and the list will update
                     ref.read(favouriteViewModelProvider.notifier)
                        .removeFromFavourite(restaurant.id);
                   },

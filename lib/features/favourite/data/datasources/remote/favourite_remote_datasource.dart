@@ -39,7 +39,6 @@ class FavouriteRemoteDatasource implements IFavouriteRemoteDatasource {
       FavouriteApiModel model) async {
     final response = await _apiClient.post(
       "${ApiEndpoints.addFavourites}/${model.restaurantId}", 
-      // You can keep data: model.toJson() if your controller still needs the body
     );
 
     if (response.data["success"] == true) {
@@ -52,8 +51,6 @@ class FavouriteRemoteDatasource implements IFavouriteRemoteDatasource {
   @override
 Future<void> removeFromFavourite(String restaurantId) async {
   try {
-    // Just send the restaurantId directly as the URL parameter
-    // matches router.delete("/:restaurantId")
     final response = await _apiClient.delete(
       "${ApiEndpoints.removeFavourites}/$restaurantId",
     );

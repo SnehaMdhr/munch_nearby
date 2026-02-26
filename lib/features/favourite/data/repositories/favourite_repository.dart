@@ -125,31 +125,22 @@ class FavouriteRepository implements IFavouriteRepository {
 
   @override
 Future<Either<Failure, List<FavouriteEntity>>> getFavourites() async {
-  // 1. Check if user is logged in
   final customerId = _sessionService.getCurrentUserId();
     if (customerId == null) {
       return Left(LocalDatabaseFailure(message: "User not logged in"));
     }
-
-    // 2. Check for Network Connectivity
     if (await _networkInfo.isConnected) {
       try {
-        // Fetch from API
         final apiModels = await _remoteDatasource.getFavourites();
-        
-        // Convert API Models to Entities
+
         final entities = apiModels.map((model) => model.toEntity()).toList();
 
-        // --- SYNC LOGIC: Update Hive with fresh data from Server ---
-        // Clear old local data for this user to prevent duplicates or stale data
         await _localDatasource.clearFavourites(); 
-        
-        // Save each new record into Hive
+
         for (var entity in entities) {
           final hiveModel = FavouriteHiveModel.fromEntity(entity);
           await _localDatasource.addToFavourite(hiveModel);
         }
-        // ---------------------------------------------------------
 
         return Right(entities);
       } on DioException catch (e) {
@@ -163,7 +154,7 @@ Future<Either<Failure, List<FavouriteEntity>>> getFavourites() async {
         return Left(ApiFailure(message: e.toString()));
       }
     } else {
-      // 3. Offline Mode: Fetch from Hive
+
       try {
         final hiveModels = await _localDatasource.getFavouritesByUser(customerId);
         

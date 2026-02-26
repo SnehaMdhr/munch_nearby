@@ -8,11 +8,11 @@ import 'package:munch_nearby/features/customer_dashboard/data/datasources/upload
 
 final uploadImageRemoteDatasourceProvider =
     Provider<IUploadImageRemoteDatasource>((ref) {
-  return UploadImageRemoteDatasource(
-    apiClient: ref.read(apiClientProvider),
-    tokenService: ref.read(tokenServiceProvider),
-  );
-});
+      return UploadImageRemoteDatasource(
+        apiClient: ref.read(apiClientProvider),
+        tokenService: ref.read(tokenServiceProvider),
+      );
+    });
 
 class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
   final ApiClient _apiClient;
@@ -21,8 +21,8 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
   UploadImageRemoteDatasource({
     required ApiClient apiClient,
     required TokenService tokenService,
-  })  : _apiClient = apiClient,
-        _tokenService = tokenService;
+  }) : _apiClient = apiClient,
+       _tokenService = tokenService;
 
   @override
   Future<String> uploadImage(File image) async {
@@ -32,13 +32,14 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
     });
 
     final token = _tokenService.getToken();
-    final cleanedToken = token
-        ?.trim()
-        .replaceFirst(RegExp(r'^Bearer\s+', caseSensitive: false), '');
+    final cleanedToken = token?.trim().replaceFirst(
+      RegExp(r'^Bearer\s+', caseSensitive: false),
+      '',
+    );
 
     try {
       final response = await _apiClient.put(
-        ApiEndpoints.uploadImage,
+        ApiEndpoints.updateProfile,
         data: formData,
         options: Options(
           headers: {
