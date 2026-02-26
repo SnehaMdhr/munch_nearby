@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:flutter/foundation.dart';
@@ -42,6 +41,10 @@ class ApiClient {
           Duration(seconds: 3),
         ],
         retryEvaluator: (error, attempt) {
+          if (error.requestOptions.data is FormData) {
+            return false;
+          }
+
           // Retry on connection errors and timeouts, not on 4xx/5xx
           return error.type == DioExceptionType.connectionTimeout ||
               error.type == DioExceptionType.sendTimeout ||
@@ -148,9 +151,7 @@ class _AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     // Skip auth for public endpoints
-    final publicEndpoints = [
-      ApiEndpoints.userLogin,
-    ];
+    final publicEndpoints = [ApiEndpoints.userLogin];
 
     final isPublicGet =
         options.method == 'GET' &&
@@ -179,9 +180,7 @@ class _AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // Handle 401 Unauthorized - token expired
     if (err.response?.statusCode == 401) {
-      SharedPreferences.getInstance().then(
-        (prefs) => prefs.remove(_tokenKey),
-      );
+      SharedPreferences.getInstance().then((prefs) => prefs.remove(_tokenKey));
       // You can add navigation logic here or use a callback
     }
     handler.next(err);

@@ -20,10 +20,6 @@ class ProfileViewModel extends Notifier<ProfileState> {
     return const ProfileState();
   }
 
-  // =====================================================
-  // 🔹 FETCH PROFILE
-  // =====================================================
-
   Future<void> fetchProfile(String userId) async {
     state = state.copyWith(status: ProfileStatus.loading);
 
@@ -44,10 +40,6 @@ class ProfileViewModel extends Notifier<ProfileState> {
       },
     );
   }
-
-  // =====================================================
-  // 🔹 UPDATE PROFILE (Name + Email + Image)
-  // =====================================================
 
   Future<void> updateProfile({
     required String userId,

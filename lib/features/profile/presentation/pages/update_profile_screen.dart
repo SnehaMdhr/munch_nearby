@@ -125,7 +125,6 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // 🔥 Profile Image
                     GestureDetector(
                       onTap: pickImage,
                       child: CircleAvatar(
@@ -145,7 +144,6 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 🔥 Name
                     TextFormField(
                       controller: nameController,
                       decoration: const InputDecoration(labelText: "Name"),
@@ -153,7 +151,6 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                     ),
                     const SizedBox(height: 10),
 
-                    // 🔥 Email
                     TextFormField(
                       controller: emailController,
                       decoration: const InputDecoration(labelText: "Email"),
@@ -161,7 +158,6 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                     ),
                     const SizedBox(height: 30),
 
-                    // 🔥 Update Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

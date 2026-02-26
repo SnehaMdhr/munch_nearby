@@ -8,12 +8,10 @@ class ProfileApiModel {
 
   ProfileApiModel({this.id, this.name, this.email, this.profilePicture});
 
-  /// toJson (for update API)
   Map<String, dynamic> toJson() {
     return {"name": name, "email": email, "profilePicture": profilePicture};
   }
 
-  /// fromJson (when fetching profile)
   factory ProfileApiModel.fromJson(Map<String, dynamic> json) {
     return ProfileApiModel(
       id: json["id"] ?? json["_id"],
@@ -23,7 +21,6 @@ class ProfileApiModel {
     );
   }
 
-  /// API → Entity
   ProfileEntity toEntity() {
     return ProfileEntity(
       userId: id ?? "",
@@ -33,7 +30,6 @@ class ProfileApiModel {
     );
   }
 
-  /// Entity → API
   factory ProfileApiModel.fromEntity(ProfileEntity entity) {
     return ProfileApiModel(
       id: entity.userId,

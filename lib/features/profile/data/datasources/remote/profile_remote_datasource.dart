@@ -67,12 +67,10 @@ class ProfileRemoteDatasource implements IProfileRemoteDatasource {
       if (response.data["success"] == true) {
         final data = response.data;
 
-        // Case 1: profilePicture at top level
         if (data["profilePicture"] != null) {
           return data["profilePicture"];
         }
 
-        // Case 2: nested inside data
         if (data["data"] != null && data["data"]["profilePicture"] != null) {
           return data["data"]["profilePicture"];
         }

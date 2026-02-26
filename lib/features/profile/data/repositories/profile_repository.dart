@@ -63,10 +63,6 @@ class ProfileRepository implements IProfileRepository {
     return fallback;
   }
 
-  // ============================================================
-  // 🔹 GET PROFILE
-  // ============================================================
-
   @override
   Future<Either<Failure, ProfileEntity>> getUserById(String userId) async {
     if (await _networkInfo.isConnected) {
@@ -89,7 +85,6 @@ class ProfileRepository implements IProfileRepository {
         return Left(ApiFailure(message: e.toString()));
       }
     } else {
-      // 🔹 OFFLINE FALLBACK
       try {
         final localModel = await _profileLocalDatasource.getUserById(userId);
 
@@ -103,10 +98,6 @@ class ProfileRepository implements IProfileRepository {
       }
     }
   }
-
-  // ============================================================
-  // 🔹 UPDATE PROFILE (NAME + EMAIL + IMAGE)
-  // ============================================================
 
   @override
   Future<Either<Failure, ProfileEntity>> updateProfile(
@@ -170,7 +161,6 @@ class ProfileRepository implements IProfileRepository {
         return Left(ApiFailure(message: e.toString()));
       }
     } else {
-      // 🔹 OFFLINE UPDATE
       try {
         final hiveModel = ProfileHiveModel.fromEntity(entity);
 
@@ -217,7 +207,6 @@ class ProfileRepository implements IProfileRepository {
         return Left(ApiFailure(message: e.toString()));
       }
     } else {
-      // 🔹 OFFLINE CASE (optional behavior)
       try {
         final localResult = await _profileLocalDatasource.uploadProfileImage(
           userId,
