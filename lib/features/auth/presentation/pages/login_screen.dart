@@ -26,10 +26,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(authViewModelProvider.notifier).login(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      await ref
+          .read(authViewModelProvider.notifier)
+          .login(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
     }
   }
 
@@ -73,39 +75,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     //   }
     // });
 
-   ref.listen<AuthState>(authViewModelProvider, (previous, next) async {
-    if (next.status == AuthStatus.error) {
-      SnackbarUtils.showError(
-        context,
-        next.errorMessage ?? "Login failed",
-        duration: const Duration(seconds: 1),
-      );
-    } 
-    else if (next.status == AuthStatus.authenticated && next.authEntity != null) {
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) async {
+      if (next.status == AuthStatus.error) {
+        SnackbarUtils.showError(
+          context,
+          next.errorMessage ?? "Login failed",
+          duration: const Duration(seconds: 1),
+        );
+      } else if (next.status == AuthStatus.authenticated &&
+          next.authEntity != null) {
+        SnackbarUtils.showSuccess(
+          context,
+          "Login successful",
+          duration: const Duration(seconds: 1),
+        );
 
-      SnackbarUtils.showSuccess(
-        context,
-        "Login successful",
-        duration: const Duration(seconds: 1),
-      );
+        final user = next.authEntity!;
 
-      final user = next.authEntity!;
+        // ✅ Save session safely
+        await ref
+            .read(userSessionServiceProvider)
+            .saveUserSession(
+              userId: user.userId ?? '',
+              email: user.email,
+              name: user.name,
+              username: user.username,
+              profilePicture: user.profilePicture,
+            );
 
-      // ✅ Save session safely
-      await ref.read(userSessionServiceProvider).saveUserSession(
-        userId: user.userId ?? '',
-        email: user.email,
-        name: user.name,
-        username: user.username,
-        profilePicture: user.profilePicture,
-      );
-
-      // ✅ Navigate
-      AppRoutes.pushReplacement(context, const BottomNavigationBarForCustomer());
-    }
-  });
-
-
+        // ✅ Navigate
+        AppRoutes.pushReplacement(
+          context,
+          const BottomNavigationBarForCustomer(),
+        );
+      }
+    });
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -128,10 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 10),
                 const Text(
                   "Welcome Back!",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 40),
 
@@ -188,7 +189,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      AppRoutes.pushReplacement(context, const ForgetPasswordScreen());
+                      AppRoutes.pushReplacement(
+                        context,
+                        const ForgetPasswordScreen(),
+                      );
                     },
                     child: const Text(
                       "Forgot Password?",
@@ -222,12 +226,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Center(
                   child: InkWell(
                     onTap: () {
-                      // TODO: integrate Google sign-in
+                      ref
+                          .read(authViewModelProvider.notifier)
+                          .loginWithGoogle();
                     },
-                    child: Image.asset(
-                      "assets/images/google.png",
-                      width: 55,
-                    ),
+                    child: Image.asset("assets/images/google.png", width: 55),
                   ),
                 ),
 
@@ -239,7 +242,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Text("Don’t have an account?"),
                     TextButton(
                       onPressed: () {
-                        AppRoutes.pushReplacement(context, const RegisterScreen());
+                        AppRoutes.pushReplacement(
+                          context,
+                          const RegisterScreen(),
+                        );
                       },
                       child: const Text(
                         "Create Account",
