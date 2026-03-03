@@ -6,6 +6,8 @@ import 'package:munch_nearby/core/services/storage/token_service.dart';
 import 'package:munch_nearby/features/auth/data/repositories/auth_repository.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:munch_nearby/features/auth/domain/usecases/request_password_reset_usecase.dart';
+import 'package:munch_nearby/features/auth/domain/usecases/reset_password_usecase.dart';
 
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -20,6 +22,8 @@ class AuthViewModel extends Notifier<AuthState> {
   late final LoginUsecase _loginUsecase;
   late final GetCurrentUserUsecase _getCurrentUserUsecase;
   late final LogoutUsecase _logoutUsecase;
+  late final RequestPasswordResetUsecase _requestPasswordResetUsecase;
+  late final ResetPasswordUsecase _resetPasswordUsecase;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
@@ -32,6 +36,10 @@ class AuthViewModel extends Notifier<AuthState> {
     _loginUsecase = ref.read(loginUsecaseProvider);
     _getCurrentUserUsecase = ref.read(getCurrentUserUsecaseProvider);
     _logoutUsecase = ref.read(logoutUsecaseProvider);
+    _requestPasswordResetUsecase = ref.read(
+      requestPasswordResetUsecaseProvider,
+    );
+    _resetPasswordUsecase = ref.read(resetPasswordUsecaseProvider);
     return AuthState();
   }
 
@@ -188,7 +196,7 @@ class AuthViewModel extends Notifier<AuthState> {
       state = state.copyWith(
         status: AuthStatus.error,
         errorMessage:
-        '$baseMessage ${e.message != null ? 'Details: ${e.message}' : ''} ${e.details != null ? 'Extra: ${e.details}' : ''}',
+            '$baseMessage ${e.message != null ? 'Details: ${e.message}' : ''} ${e.details != null ? 'Extra: ${e.details}' : ''}',
       );
     } catch (e) {
       state = state.copyWith(
@@ -196,5 +204,46 @@ class AuthViewModel extends Notifier<AuthState> {
         errorMessage: 'Google sign-in failed. Please try again. Details: $e',
       );
     }
+  }
+
+  Future<void> requestPasswordReset({required String email}) async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+    final result = await ref
+        .read(authRepositoryProvider)
+        .requestPasswordReset(email);
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(status: AuthStatus.otpSent),
+    );
+  }
+
+  Future<void> resetPassword({
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+    required String email,
+  }) async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+
+    final result = await ref
+        .read(authRepositoryProvider)
+        .resetPassword(
+          otp: otp,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+          email: email,
+        );
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(status: AuthStatus.passwordReset),
+    );
   }
 }

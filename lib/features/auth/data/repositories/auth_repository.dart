@@ -171,4 +171,63 @@ class AuthRepository implements IAuthRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> requestPasswordReset(String email) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final result = await _authRemoteDataSource.requestPasswordReset(email);
+        if (result) return const Right(true);
+        return Left(ApiFailure(message: "Failed to send OTP"));
+      } on DioException catch (e) {
+        return Left(
+          ApiFailure(
+            message: e.response?.data["message"] ?? "Failed to send OTP",
+            statusCode: e.response?.statusCode,
+          ),
+        );
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return Left(
+        LocalDatabaseFailure(message: "Internet required to request OTP"),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final result = await _authRemoteDataSource.resetPassword(
+          otp: otp,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+          email: email,
+        );
+
+        if (result) return const Right(true);
+        return Left(ApiFailure(message: "Failed to reset password"));
+      } on DioException catch (e) {
+        return Left(
+          ApiFailure(
+            message: e.response?.data["message"] ?? "Failed to reset password",
+            statusCode: e.response?.statusCode,
+          ),
+        );
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return Left(
+        LocalDatabaseFailure(message: "Internet required to reset password"),
+      );
+    }
+  }
 }

@@ -16,4 +16,11 @@ abstract interface class IAuthRemoteDatasource {
   Future<bool> isEmailExists(String email);
   Future<AuthApiModel?> getCurrentUser();
   Future<AuthApiModel?> loginWithGoogle(String idToken);
+  Future<bool> requestPasswordReset(String email);
+  Future<bool> resetPassword({
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+    String? email, // optional if your backend needs it
+  });
 }

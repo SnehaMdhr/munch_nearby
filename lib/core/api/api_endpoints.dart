@@ -76,6 +76,8 @@ class ApiEndpoints {
   static String userPhoto(String id) => '/auth/$id/photo';
   static String updateProfile = "/auth/update-profile";
   static const String googleLogin = "/auth/google-login";
+  static const String requestPasswordReset = "/auth/request-password-reset";
+  static const String resetPassword = "/auth/reset-password";
 
   static const String restaurants = '/restaurant';
 
