@@ -78,6 +78,7 @@ class ApiEndpoints {
   static const String googleLogin = "/auth/google-login";
   static const String requestPasswordReset = "/auth/request-password-reset";
   static const String resetPassword = "/auth/reset-password";
+  static const String changePassword = "/auth/change-password";
 
   static const String restaurants = '/restaurant';
 

@@ -164,4 +164,26 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       return false;
     }
   }
+
+  @override
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.changePassword,
+      data: {
+        "oldPassword": oldPassword,
+        "newPassword": newPassword,
+        "confirmPassword": confirmPassword,
+      },
+    );
+
+    if (response.data["success"] == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

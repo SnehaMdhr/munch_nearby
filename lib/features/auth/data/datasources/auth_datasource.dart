@@ -21,6 +21,11 @@ abstract interface class IAuthRemoteDatasource {
     required String otp,
     required String newPassword,
     required String confirmPassword,
-    String? email, // optional if your backend needs it
+    String? email,
+  });
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
   });
 }

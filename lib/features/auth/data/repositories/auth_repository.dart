@@ -230,4 +230,37 @@ class AuthRepository implements IAuthRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final result = await _authRemoteDataSource.changePassword(
+          oldPassword: oldPassword,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        );
+
+        if (result) return const Right(true);
+        return Left(ApiFailure(message: "Failed to change password"));
+      } on DioException catch (e) {
+        return Left(
+          ApiFailure(
+            message: e.response?.data["message"] ?? "Failed to change password",
+            statusCode: e.response?.statusCode,
+          ),
+        );
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return Left(
+        LocalDatabaseFailure(message: "Internet required to change password"),
+      );
+    }
+  }
 }

@@ -6,40 +6,37 @@ import 'package:munch_nearby/core/usecases/app_usecase.dart';
 import 'package:munch_nearby/features/auth/data/repositories/auth_repository.dart';
 import 'package:munch_nearby/features/auth/domain/repositories/auth_repository.dart';
 
-class ResetPasswordParams extends Equatable {
-  final String otp;
+class ChangePasswordParams extends Equatable {
+  final String oldPassword;
   final String newPassword;
   final String confirmPassword;
-  final String? email;
-  const ResetPasswordParams({
-    required this.otp,
+  const ChangePasswordParams({
+    required this.oldPassword,
     required this.newPassword,
     required this.confirmPassword,
-    this.email,
   });
 
   @override
-  List<Object?> get props => [otp, newPassword, confirmPassword, email];
+  List<Object?> get props => [oldPassword, newPassword, confirmPassword];
 }
 
-final resetPasswordUsecaseProvider = Provider<ResetPasswordUsecase>((ref) {
+final changePasswordUsecaseProvider = Provider<ChangePasswordUsecase>((ref) {
   final authRepository = ref.read(authRepositoryProvider);
-  return ResetPasswordUsecase(authRepository: authRepository);
+  return ChangePasswordUsecase(authRepository: authRepository);
 });
 
-class ResetPasswordUsecase
-    implements UseCaseWithParams<bool, ResetPasswordParams> {
+class ChangePasswordUsecase
+    implements UseCaseWithParams<bool, ChangePasswordParams> {
   final IAuthRepository _authRepository;
-  ResetPasswordUsecase({required IAuthRepository authRepository})
+  ChangePasswordUsecase({required IAuthRepository authRepository})
     : _authRepository = authRepository;
 
   @override
-  Future<Either<Failure, bool>> call(ResetPasswordParams params) {
-    return _authRepository.resetPassword(
-      otp: params.otp,
+  Future<Either<Failure, bool>> call(ChangePasswordParams params) {
+    return _authRepository.changePassword(
+      oldPassword: params.oldPassword,
       newPassword: params.newPassword,
       confirmPassword: params.confirmPassword,
-      email: params.email as String,
     );
   }
 }

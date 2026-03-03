@@ -15,4 +15,9 @@ abstract interface class IAuthRepository {
     required String newPassword,
     required String confirmPassword,
   });
+  Future<Either<Failure, bool>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  });
 }

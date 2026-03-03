@@ -10,6 +10,7 @@ enum AuthStatus {
   otpSent,
   passwordReset,
   error,
+  passwordChanged,
 }
 
 class AuthState extends Equatable {

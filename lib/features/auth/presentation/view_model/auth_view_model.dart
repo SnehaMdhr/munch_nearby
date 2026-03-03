@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:munch_nearby/core/config/oauth_config.dart';
 import 'package:munch_nearby/core/services/storage/token_service.dart';
 import 'package:munch_nearby/features/auth/data/repositories/auth_repository.dart';
+import 'package:munch_nearby/features/auth/domain/usecases/change_password_usecase.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/request_password_reset_usecase.dart';
@@ -24,6 +25,7 @@ class AuthViewModel extends Notifier<AuthState> {
   late final LogoutUsecase _logoutUsecase;
   late final RequestPasswordResetUsecase _requestPasswordResetUsecase;
   late final ResetPasswordUsecase _resetPasswordUsecase;
+  late final ChangePasswordUsecase _changePasswordUsecase;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
@@ -40,6 +42,7 @@ class AuthViewModel extends Notifier<AuthState> {
       requestPasswordResetUsecaseProvider,
     );
     _resetPasswordUsecase = ref.read(resetPasswordUsecaseProvider);
+    _changePasswordUsecase = ref.read(changePasswordUsecaseProvider);
     return AuthState();
   }
 
@@ -244,6 +247,30 @@ class AuthViewModel extends Notifier<AuthState> {
         errorMessage: failure.message,
       ),
       (success) => state = state.copyWith(status: AuthStatus.passwordReset),
+    );
+  }
+
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+
+    final params = ChangePasswordParams(
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    );
+
+    final result = await _changePasswordUsecase(params);
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(status: AuthStatus.passwordChanged),
     );
   }
 }
