@@ -12,6 +12,7 @@ class RestaurantEntity extends Equatable {
   final String owner;
   final double? latitude;
   final double? longitude;
+  final List? openingHours;
 
   RestaurantEntity({
     required this.id,
@@ -25,10 +26,22 @@ class RestaurantEntity extends Equatable {
     required this.owner,
     this.latitude,
     this.longitude,
+    this.openingHours,
   });
 
   @override
   List<Object?> get props => [
-    id, name, address, mapLink, contactNumber, category, description, imageUrl, owner, latitude, longitude
+    id,
+    name,
+    address,
+    mapLink,
+    contactNumber,
+    category,
+    description,
+    imageUrl,
+    owner,
+    latitude,
+    longitude,
+    openingHours,
   ];
 }

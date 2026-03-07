@@ -7,7 +7,6 @@ part 'restaurant_hive_model.g.dart';
 
 @HiveType(typeId: HiveTableConstant.restaurantTypeId)
 class RestaurantHiveModel extends HiveObject {
-
   @HiveField(0)
   final String id;
 
@@ -38,6 +37,8 @@ class RestaurantHiveModel extends HiveObject {
   final double? latitude;
   @HiveField(10)
   final double? longitude;
+  @HiveField(11)
+  final List? openingHours;
 
   RestaurantHiveModel({
     String? id,
@@ -50,7 +51,8 @@ class RestaurantHiveModel extends HiveObject {
     this.imageUrl,
     required this.owner,
     this.latitude,
-    this.longitude
+    this.longitude,
+    this.openingHours,
   }) : id = id ?? const Uuid().v4();
 
   factory RestaurantHiveModel.fromEntity(RestaurantEntity entity) {
@@ -66,6 +68,7 @@ class RestaurantHiveModel extends HiveObject {
       owner: entity.owner,
       latitude: entity.latitude,
       longitude: entity.longitude,
+      openingHours: entity.openingHours,
     );
   }
   RestaurantEntity toEntity() {
@@ -81,10 +84,11 @@ class RestaurantHiveModel extends HiveObject {
       owner: owner,
       latitude: latitude,
       longitude: longitude,
+      openingHours: openingHours,
     );
   }
-  static List<RestaurantEntity> toEntityList(
-      List<RestaurantHiveModel> models) {
+
+  static List<RestaurantEntity> toEntityList(List<RestaurantHiveModel> models) {
     return models.map((e) => e.toEntity()).toList();
   }
 }

@@ -13,6 +13,7 @@ class RestaurantApiModel {
   final String owner;
   final double? latitude;
   final double? longitude;
+  final List? openingHours;
 
   RestaurantApiModel({
     required this.id,
@@ -26,6 +27,7 @@ class RestaurantApiModel {
     required this.owner,
     this.latitude,
     this.longitude,
+    this.openingHours,
   });
 
   Map<String, dynamic> toJson() {
@@ -39,6 +41,7 @@ class RestaurantApiModel {
       "description": description,
       "imageUrl": imageUrl,
       "owner": owner,
+      "openingHours": openingHours,
       if (longitude != null && latitude != null)
         "location": {
           "type": "Point",
@@ -104,6 +107,7 @@ class RestaurantApiModel {
       contactNumber: json["contactNumber"]?.toString() ?? "",
       category: json["category"]?.toString() ?? "",
       description: json["description"]?.toString() ?? "",
+      openingHours: json["openingHours"] is List ? json["openingHours"] : null,
 
       imageUrl: json["imageUrl"] is Map
           ? json["imageUrl"]["url"]?.toString()
@@ -127,6 +131,7 @@ class RestaurantApiModel {
       owner: owner,
       latitude: latitude,
       longitude: longitude,
+      openingHours: openingHours,
     );
   }
 
@@ -143,6 +148,7 @@ class RestaurantApiModel {
       owner: entity.owner,
       latitude: entity.latitude,
       longitude: entity.longitude,
+      openingHours: entity.openingHours,
     );
   }
   static List<RestaurantEntity> toEntityList(List<RestaurantApiModel> models) {
@@ -162,6 +168,7 @@ class RestaurantApiModel {
       owner: owner,
       latitude: latitude,
       longitude: longitude,
+      openingHours: openingHours,
     );
   }
 }
