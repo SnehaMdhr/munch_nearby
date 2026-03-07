@@ -17,6 +17,7 @@ final uploadImageRemoteDatasourceProvider =
 class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
   final ApiClient _apiClient;
   final TokenService _tokenService;
+  static const List<String> _uploadFieldCandidates = ['image'];
 
   UploadImageRemoteDatasource({
     required ApiClient apiClient,
@@ -26,10 +27,15 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
 
   @override
   Future<String> uploadImage(File image) async {
-    final fileName = image.path.split("/").last;
-    final formData = FormData.fromMap({
-      "image": await MultipartFile.fromFile(image.path, filename: fileName),
-    });
+    if (!await image.exists()) {
+      throw Exception(
+        'Selected image file does not exist. Please choose it again.',
+      );
+    }
+
+    final fileName = image.uri.pathSegments.isNotEmpty
+        ? image.uri.pathSegments.last
+        : image.path.split(RegExp(r'[\\/]')).last;
 
     final token = _tokenService.getToken();
     final cleanedToken = token?.trim().replaceFirst(
@@ -37,43 +43,106 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
       '',
     );
 
-    try {
-      final response = await _apiClient.put(
-        ApiEndpoints.updateProfile,
-        data: formData,
-        options: Options(
-          headers: {
-            if (cleanedToken != null && cleanedToken.isNotEmpty)
-              "Authorization": "Bearer $cleanedToken",
-          },
-        ),
-      );
+    DioException? lastError;
+    for (final fieldName in _uploadFieldCandidates) {
+      try {
+        final formData = FormData.fromMap({
+          fieldName: await MultipartFile.fromFile(
+            image.path,
+            filename: fileName,
+          ),
+        });
 
-      final photoName = _extractUploadedPhotoName(response.data);
-      if (photoName != null && photoName.isNotEmpty) {
-        return photoName;
+        final response = await _apiClient.put(
+          ApiEndpoints.updateProfile,
+          data: formData,
+          options: Options(
+            headers: {
+              if (cleanedToken != null && cleanedToken.isNotEmpty)
+                "Authorization": "Bearer $cleanedToken",
+            },
+          ),
+        );
+
+        final photoName = _extractUploadedPhotoName(response.data);
+        if (photoName != null && photoName.isNotEmpty) {
+          return photoName;
+        }
+
+        if (_isSuccessResponse(response.data)) {
+          return '';
+        }
+
+        throw Exception('Failed to upload image.');
+      } on DioException catch (e) {
+        lastError = e;
+
+        // If backend indicates missing file/path, it may be expecting a
+        // different multipart key. Retry with the next candidate.
+        final responseBody = e.response?.data?.toString() ?? '';
+        final hasMoreCandidates = fieldName != _uploadFieldCandidates.last;
+        final isLikelyFieldMismatch =
+            responseBody.contains('ENOENT') || e.response?.statusCode == 400;
+
+        if (hasMoreCandidates && isLikelyFieldMismatch) {
+          continue;
+        }
+
+        rethrow;
       }
+    }
 
-      if (_isSuccessResponse(response.data)) {
-        return '';
-      }
-
-      throw Exception('Failed to upload image.');
-    } on DioException catch (e) {
+    if (lastError != null) {
+      final e = lastError;
       final responseBody = e.response?.data?.toString() ?? '';
+      final apiMessage = _extractApiErrorMessage(e.response?.data);
+
+      if (apiMessage != null && apiMessage.trim().isNotEmpty) {
+        throw Exception(apiMessage.trim());
+      }
 
       if (responseBody.contains('ENOENT')) {
-        throw Exception(
-          'Upload folder is missing on backend. Please create the backend uploads directory.',
-        );
+        throw Exception('Image upload failed with ENOENT on backend.');
       }
 
-      final apiMessage = e.response?.data is Map<String, dynamic>
-          ? (e.response?.data['message'] as String?)
-          : null;
-
-      throw Exception(apiMessage ?? 'Failed to upload image.');
+      final statusCode = e.response?.statusCode;
+      final compactBody = responseBody.length > 220
+          ? '${responseBody.substring(0, 220)}...'
+          : responseBody;
+      throw Exception(
+        'Failed to upload image${statusCode != null ? ' (HTTP $statusCode)' : ''}${compactBody.isNotEmpty ? ': $compactBody' : ''}.',
+      );
     }
+
+    throw Exception('Failed to upload image.');
+  }
+
+  String? _extractApiErrorMessage(dynamic data) {
+    if (data is! Map<String, dynamic>) return null;
+
+    final message = data['message'];
+    if (message is String && message.trim().isNotEmpty) {
+      return message;
+    }
+
+    final error = data['error'];
+    if (error is String && error.trim().isNotEmpty) {
+      return error;
+    }
+
+    final nestedData = data['data'];
+    if (nestedData is Map<String, dynamic>) {
+      final nestedMessage = nestedData['message'];
+      if (nestedMessage is String && nestedMessage.trim().isNotEmpty) {
+        return nestedMessage;
+      }
+      final nestedError = nestedData['error'];
+      if (nestedError is String && nestedError.trim().isNotEmpty) {
+        return nestedError;
+      }
+    }
+
+    return null;
   }
 
   String? _extractUploadedPhotoName(dynamic data) {

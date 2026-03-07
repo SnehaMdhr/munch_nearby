@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:munch_nearby/features/profile/data/datasources/profile_datasource.dart';
@@ -14,6 +16,7 @@ final profileRemoteDatasourceProvider = Provider<IProfileRemoteDatasource>((
 
 class ProfileRemoteDatasource implements IProfileRemoteDatasource {
   final ApiClient _apiClient;
+  static const List<String> _uploadFieldCandidates = ['image'];
 
   ProfileRemoteDatasource({required ApiClient apiClient})
     : _apiClient = apiClient;
@@ -55,24 +58,51 @@ class ProfileRemoteDatasource implements IProfileRemoteDatasource {
   @override
   Future<String?> uploadProfileImage(String userId, String imagePath) async {
     try {
-      final formData = FormData.fromMap({
-        "image": await MultipartFile.fromFile(imagePath),
-      });
+      final imageFile = File(imagePath);
+      if (!await imageFile.exists()) {
+        return null;
+      }
 
-      final response = await _apiClient.put(
-        ApiEndpoints.updateProfile,
-        data: formData,
-      );
+      final fileName = File(imagePath).uri.pathSegments.isNotEmpty
+          ? File(imagePath).uri.pathSegments.last
+          : imagePath.split(RegExp(r'[\\/]')).last;
 
-      if (response.data["success"] == true) {
-        final data = response.data;
+      for (final fieldName in _uploadFieldCandidates) {
+        try {
+          final formData = FormData.fromMap({
+            fieldName: await MultipartFile.fromFile(
+              imagePath,
+              filename: fileName,
+            ),
+          });
 
-        if (data["profilePicture"] != null) {
-          return data["profilePicture"];
-        }
+          final response = await _apiClient.put(
+            ApiEndpoints.updateProfile,
+            data: formData,
+          );
 
-        if (data["data"] != null && data["data"]["profilePicture"] != null) {
-          return data["data"]["profilePicture"];
+          if (response.data["success"] == true) {
+            final data = response.data;
+
+            if (data["profilePicture"] != null) {
+              return data["profilePicture"];
+            }
+
+            if (data["data"] != null &&
+                data["data"]["profilePicture"] != null) {
+              return data["data"]["profilePicture"];
+            }
+          }
+        } on DioException catch (e) {
+          final responseBody = e.response?.data?.toString() ?? '';
+          final hasMoreCandidates = fieldName != _uploadFieldCandidates.last;
+          final isLikelyFieldMismatch =
+              responseBody.contains('ENOENT') || e.response?.statusCode == 400;
+          if (hasMoreCandidates && isLikelyFieldMismatch) {
+            continue;
+          }
+
+          rethrow;
         }
       }
 
