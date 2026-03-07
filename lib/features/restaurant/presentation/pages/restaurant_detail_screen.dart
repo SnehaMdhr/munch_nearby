@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
@@ -12,10 +14,11 @@ import 'package:munch_nearby/features/restaurant/presentation/view_model/restaur
 import 'package:munch_nearby/features/review/domain/entities/review_entity.dart';
 import 'package:munch_nearby/features/review/presentation/state/review_state.dart';
 import 'package:munch_nearby/features/review/presentation/view_model/review_view_model.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:async';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String restaurantId;
-
   const RestaurantDetailScreen({super.key, required this.restaurantId});
 
   @override
@@ -25,7 +28,75 @@ class RestaurantDetailScreen extends ConsumerStatefulWidget {
 
 class _RestaurantDetailScreenState
     extends ConsumerState<RestaurantDetailScreen> {
+  StreamSubscription<GyroscopeEvent>? _gyroscpoeEventSubscription;
+  bool _sensorTriggered = false;
   bool isMenuSelected = true;
+
+  // Some devices report proximity as binary (0/1), others as distance values.
+  // Treat only 0 or 1 as "near" for binary sensors and small positive values
+  // as near for distance-based sensors.
+  bool _isNearFromSensorValue(int event) {
+    if (event == 0 || event == 1) {
+      return event == 0;
+    }
+    return event > 0 && event < 4;
+  }
+
+  void _startGyroscopeSensor() {
+    _gyroscpoeEventSubscription = gyroscopeEvents.listen((event) async {
+      final authState = ref.read(authViewModelProvider);
+      final customerId = authState.authEntity?.userId;
+
+      if (customerId == null) return;
+
+      final favouriteNotifier = ref.read(favouriteViewModelProvider.notifier);
+
+      final entity = FavouriteEntity(
+        customerId: customerId,
+        restaurantId: widget.restaurantId,
+      );
+
+      /// TILT RIGHT → ADD TO FAVOURITE
+      if (event.y > 2 && !_sensorTriggered) {
+        _sensorTriggered = true;
+
+        await favouriteNotifier.toggleFavourite(entity);
+        await favouriteNotifier.loadFavourites();
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Tilt Right → Added to favourites ❤️")),
+        );
+      }
+
+      /// TILT LEFT → REMOVE FROM FAVOURITE
+      if (event.y < -2 && !_sensorTriggered) {
+        _sensorTriggered = true;
+
+        await favouriteNotifier.removeFromFavourite(widget.restaurantId);
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Tilt Left → Removed from favourites ❌"),
+          ),
+        );
+      }
+
+      /// RESET SENSOR
+      if (event.y.abs() < 0.5) {
+        _sensorTriggered = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _gyroscpoeEventSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -36,6 +107,7 @@ class _RestaurantDetailScreenState
           .read(reviewViewModelProvider.notifier)
           .loadRestaurantReviews(widget.restaurantId);
     });
+    _startGyroscopeSensor();
   }
 
   String? _normalizeMenuImageUrl(String rawUrl) {
