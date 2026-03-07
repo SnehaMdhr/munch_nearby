@@ -11,7 +11,9 @@ import 'package:munch_nearby/features/restaurant/presentation/state/restaurant_s
 import 'package:munch_nearby/features/restaurant/presentation/view_model/restaurant_view_model.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({super.key});
+  final String? initialRestaurantId;
+
+  const MapScreen({super.key, this.initialRestaurantId});
 
   @override
   ConsumerState<MapScreen> createState() => _MapScreenState();
@@ -20,8 +22,10 @@ class MapScreen extends ConsumerStatefulWidget {
 class _MapScreenState extends ConsumerState<MapScreen>
     with TickerProviderStateMixin {
   final MapController _mapController = MapController();
+  AnimationController? _mapMoveController;
   bool _isMapReady = false;
   bool _movedToRestaurant = false;
+  bool _initialRestaurantSelected = false;
 
   // User location
   LatLng? _userLocation;
@@ -70,6 +74,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
 
   @override
   void dispose() {
+    _mapMoveController?.dispose();
     _pulseController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
@@ -99,11 +104,27 @@ class _MapScreenState extends ConsumerState<MapScreen>
           _userLocation = LatLng(position.latitude, position.longitude);
           _locationLoading = false;
         });
+        _tryAutoSelectRestaurant();
       }
     } catch (e) {
       debugPrint('Location error: $e');
       if (mounted) setState(() => _locationLoading = false);
     }
+  }
+
+  void _tryAutoSelectRestaurant() {
+    if (_initialRestaurantSelected || widget.initialRestaurantId == null)
+      return;
+    if (_userLocation == null) return;
+
+    final restaurants = _validRestaurants;
+    if (restaurants.isEmpty) return;
+
+    final match = restaurants.where((r) => r.id == widget.initialRestaurantId);
+    if (match.isEmpty) return;
+
+    _initialRestaurantSelected = true;
+    _selectRestaurant(match.first);
   }
 
   // Filter restaurants with valid coordinates
@@ -152,7 +173,10 @@ class _MapScreenState extends ConsumerState<MapScreen>
   }
 
   void _animatedMapMove(LatLng target, double zoom) {
-    if (!_isMapReady) return;
+    if (!_isMapReady || !mounted) return;
+
+    _mapMoveController?.stop();
+    _mapMoveController?.dispose();
 
     final latTween = Tween<double>(
       begin: _mapController.camera.center.latitude,
@@ -171,6 +195,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+    _mapMoveController = controller;
 
     final animation = CurvedAnimation(
       parent: controller,
@@ -178,6 +203,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
     );
 
     controller.addListener(() {
+      if (!mounted || !_isMapReady) return;
       _mapController.move(
         LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
         zoomTween.evaluate(animation),
@@ -185,7 +211,13 @@ class _MapScreenState extends ConsumerState<MapScreen>
     });
 
     controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) controller.dispose();
+      if (status == AnimationStatus.completed ||
+          status == AnimationStatus.dismissed) {
+        if (_mapMoveController == controller) {
+          _mapMoveController = null;
+        }
+        controller.dispose();
+      }
     });
 
     controller.forward();
@@ -272,6 +304,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
           13,
         );
         _movedToRestaurant = true;
+        _tryAutoSelectRestaurant();
       });
     }
 
