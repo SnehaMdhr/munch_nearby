@@ -9,6 +9,7 @@ class MyTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,
+    this.readOnly = false,
     this.validator,
   });
 
@@ -18,6 +19,7 @@ class MyTextFormField extends StatelessWidget {
   final IconData? prefixIcon;
   final Widget? suffixIcon;
   final bool obscureText;
+  final bool readOnly;
   final String? Function(String?)? validator;
 
   @override
@@ -26,8 +28,10 @@ class MyTextFormField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       obscureText: obscureText,
-      validator: validator ??
-              (value) {
+      readOnly: readOnly,
+      validator:
+          validator ??
+          (value) {
             if (value == null || value.isEmpty) {
               return "Please enter $label";
             }
