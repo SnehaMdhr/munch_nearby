@@ -10,9 +10,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final hiveService = HiveService();
-  await hiveService.init();
-
-  final sharedPreferences = await SharedPreferences.getInstance();
+  final startupResults = await Future.wait<dynamic>([
+    hiveService.init(),
+    SharedPreferences.getInstance(),
+  ]);
+  final sharedPreferences = startupResults[1] as SharedPreferences;
 
   runApp(
     ProviderScope(
