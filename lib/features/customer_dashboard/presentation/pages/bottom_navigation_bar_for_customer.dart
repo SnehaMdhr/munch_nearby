@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 
 import '../../../../core/widgets/app_bar_title.dart';
 import '../../../favourite/presentation/pages/favourite_screen.dart';
@@ -6,18 +8,19 @@ import '../../../restaurant/presentation/pages/home_screen.dart';
 import 'bottom_screen_customer/map_screen.dart';
 import 'bottom_screen_customer/profile_screen.dart';
 
-
-class BottomNavigationBarForCustomer extends StatefulWidget {
+class BottomNavigationBarForCustomer extends ConsumerStatefulWidget {
   const BottomNavigationBarForCustomer({super.key});
 
   @override
-  State<BottomNavigationBarForCustomer> createState() => _BottomNavigationBarForCustomerState();
+  ConsumerState<BottomNavigationBarForCustomer> createState() =>
+      _BottomNavigationBarForCustomerState();
 }
 
-class _BottomNavigationBarForCustomerState extends State<BottomNavigationBarForCustomer> {
+class _BottomNavigationBarForCustomerState
+    extends ConsumerState<BottomNavigationBarForCustomer> {
   int _selectedIndex = 0;
 
-  List <Widget> lstBottomScreen = [
+  List<Widget> lstBottomScreen = [
     const HomeScreen(),
     const MapScreen(),
     const FavouriteScreen(),
@@ -25,27 +28,39 @@ class _BottomNavigationBarForCustomerState extends State<BottomNavigationBarForC
   ];
   @override
   Widget build(BuildContext context) {
+    final session = ref.watch(userSessionServiceProvider);
+    final currentUserName = session.getCurrentUserName()?.trim();
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const AppBarTitle(name: "Sneha"),
+        title: AppBarTitle(name: currentUserName ?? 'User'),
       ),
       body: lstBottomScreen[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Map"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favourite"),
-          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: "Profile")
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite_border),
+            label: "Favourite",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_2_outlined),
+            label: "Profile",
+          ),
         ],
         backgroundColor: Colors.white,
         selectedItemColor: Color(0xFFEE7C2B),
         unselectedItemColor: Color(0xFF64748B),
         currentIndex: _selectedIndex,
-        onTap: (index){
+        onTap: (index) {
           setState(() {
-            _selectedIndex=index;
+            _selectedIndex = index;
           });
         },
       ),
