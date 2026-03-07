@@ -131,7 +131,7 @@ class HiveService {
       userId: user.userId,
       name: user.name,
       email: user.email,
-      profilePicture: user.profilePicture,
+      profilePicture: user.imageUrl,
     );
   }
 
@@ -156,7 +156,7 @@ class HiveService {
       email: profile.email ?? existingUser.email,
       password: existingUser.password,
       username: existingUser.username,
-      profilePicture: profile.profilePicture ?? existingUser.profilePicture,
+      imageUrl: profile.profilePicture ?? existingUser.imageUrl,
     );
 
     await _authBox.put(updatedUser.userId, updatedUser);
@@ -175,11 +175,11 @@ class HiveService {
       email: existingUser.email,
       password: existingUser.password,
       username: existingUser.username,
-      profilePicture: imagePath,
+      imageUrl: imagePath,
     );
 
     await _authBox.put(updatedUser.userId, updatedUser);
-    return updatedUser.profilePicture;
+    return updatedUser.imageUrl;
   }
 
   // RESTAURANT QUERIES

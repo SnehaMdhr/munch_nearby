@@ -100,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               email: user.email,
               name: user.name,
               username: user.username,
-              profilePicture: user.profilePicture,
+              profilePicture: user.imageUrl,
             );
 
         // ✅ Navigate
@@ -121,18 +121,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 120),
-                const Text(
-                  "MunchNearby",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFE87A5D),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Welcome ",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFE87A5D), // Welcome color
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Back!",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Back color (change this)
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Welcome Back!",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  "Login to your Account",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 40),
 
@@ -196,7 +214,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                     child: const Text(
                       "Forgot Password?",
-                      style: TextStyle(color: Color(0xFFE87A5D)),
+                      style: TextStyle(
+                        color: Color(0xFFE87A5D),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

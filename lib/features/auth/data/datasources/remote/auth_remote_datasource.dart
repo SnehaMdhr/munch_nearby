@@ -50,7 +50,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
           email: user.email,
           name: user.name,
           username: user.username,
-          profilePicture: user.profilePicture,
+          profilePicture: user.imageUrl,
         );
       } else {
         // Handle the case where user.id is null
@@ -112,7 +112,7 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
           email: user.email,
           name: user.name,
           username: user.username,
-          profilePicture: user.profilePicture,
+          profilePicture: user.imageUrl,
         );
       }
 
