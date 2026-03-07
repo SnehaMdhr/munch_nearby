@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/features/auth/presentation/state/auth_state.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
+import 'package:munch_nearby/features/auth/presentation/widgets/my_button.dart';
+import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -51,55 +53,60 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Change Password")),
+      appBar: AppBar(
+        title: Text(
+          "Change Password",
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontFamily: "PlusJakarta Bold"),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
+              MyTextFormField(
                 controller: _oldPasswordController,
                 obscureText: _obscureOld,
-                decoration: InputDecoration(
-                  labelText: "Old Password",
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureOld ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureOld = !_obscureOld;
-                      });
-                    },
+                label: "Old Password",
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureOld ? Icons.visibility_off : Icons.visibility,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureOld = !_obscureOld;
+                    });
+                  },
                 ),
+
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter Old password";
                   }
                   return null;
                 },
+                onChanged: (String value) {},
               ),
 
               const SizedBox(height: 20),
 
               /// New Password
-              TextFormField(
+              MyTextFormField(
                 controller: _newPasswordController,
                 obscureText: _obscureNew,
-                decoration: InputDecoration(
-                  labelText: "New Password",
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNew ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureNew = !_obscureNew;
-                      });
-                    },
+                label: "New Password",
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureNew ? Icons.visibility_off : Icons.visibility,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureNew = !_obscureNew;
+                    });
+                  },
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -110,27 +117,27 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   }
                   return null;
                 },
+                onChanged: (String value) {},
               ),
 
               const SizedBox(height: 20),
 
               /// Confirm Password
-              TextFormField(
+              MyTextFormField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirm = !_obscureConfirm;
-                      });
-                    },
+                label: "Confirm Password",
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirm = !_obscureConfirm;
+                    });
+                  },
                 ),
+
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Please confirm password";
@@ -140,6 +147,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   }
                   return null;
                 },
+                onChanged: (String value) {},
               ),
 
               const SizedBox(height: 30),
@@ -148,7 +156,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   ? const CircularProgressIndicator()
                   : SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
+                      child: MyButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             ref
@@ -164,7 +172,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                 );
                           }
                         },
-                        child: const Text("Change Password"),
+                        text: 'Change Password',
                       ),
                     ),
             ],
