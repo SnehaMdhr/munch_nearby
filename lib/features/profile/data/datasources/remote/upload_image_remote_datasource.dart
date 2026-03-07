@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/api/api_client.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/core/services/storage/token_service.dart';
-import 'package:munch_nearby/features/customer_dashboard/data/datasources/upload_image_datasource.dart';
+import 'package:munch_nearby/features/profile/data/datasources/upload_image_datasource.dart';
 
 final uploadImageRemoteDatasourceProvider =
     Provider<IUploadImageRemoteDatasource>((ref) {

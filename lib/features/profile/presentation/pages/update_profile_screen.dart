@@ -9,8 +9,8 @@ import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/auth/presentation/widgets/my_button.dart';
 import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
-import 'package:munch_nearby/features/customer_dashboard/presentation/state/upload_image_state.dart';
-import 'package:munch_nearby/features/customer_dashboard/presentation/view_model/upload_image_viewmodel.dart';
+import 'package:munch_nearby/features/profile/presentation/state/upload_image_state.dart';
+import 'package:munch_nearby/features/profile/presentation/view_model/upload_image_viewmodel.dart';
 import 'package:munch_nearby/features/profile/presentation/view_model/profile_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 

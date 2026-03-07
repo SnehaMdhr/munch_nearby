@@ -5,12 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
+import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
 import 'package:munch_nearby/features/menu/domain/entities/menu_entity.dart';
 import 'package:munch_nearby/features/menu/presentation/state/menu_state.dart';
 import 'package:munch_nearby/features/menu/presentation/view_model/menu_view_model.dart';
 import 'package:munch_nearby/features/restaurant/presentation/view_model/restaurant_view_model.dart';
+import 'package:munch_nearby/features/restaurant/presentation/widgets/favourite_toggle_button.dart';
+import 'package:munch_nearby/features/restaurant/presentation/widgets/menu_item_card.dart';
+import 'package:munch_nearby/features/restaurant/presentation/widgets/menu_section.dart';
+import 'package:munch_nearby/features/restaurant/presentation/widgets/review_section.dart';
+import 'package:munch_nearby/features/restaurant/presentation/widgets/tab_button.dart';
 import 'package:munch_nearby/features/review/domain/entities/review_entity.dart';
 import 'package:munch_nearby/features/review/presentation/state/review_state.dart';
 import 'package:munch_nearby/features/review/presentation/view_model/review_view_model.dart';
@@ -219,18 +225,10 @@ class _RestaurantDetailScreenState
                 ),
               ),
               const SizedBox(height: 15),
-              TextField(
+              MyTextFormField(
                 controller: commentController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: "Share your experience...",
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: isEditing ? Colors.blue : const Color(0xFFE98869),
-                    ),
-                  ),
-                ),
+                label: "Share your experience...",
+                onChanged: (String value) {},
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -409,9 +407,9 @@ class _RestaurantDetailScreenState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildCircularButton(
-                  Icons.arrow_back,
-                  () => Navigator.pop(context),
+                FavouriteToggleButton(
+                  icon: Icons.arrow_back,
+                  onTap: () => Navigator.pop(context),
                 ),
                 GestureDetector(
                   onTap: () async {
@@ -605,15 +603,15 @@ class _RestaurantDetailScreenState
                       ),
                       child: Row(
                         children: [
-                          _buildTabButton(
-                            "Menu",
-                            isMenuSelected,
-                            () => setState(() => isMenuSelected = true),
+                          TabButton(
+                            title: "Menu",
+                            isActive: isMenuSelected,
+                            onTap: () => setState(() => isMenuSelected = true),
                           ),
-                          _buildTabButton(
-                            "Reviews",
-                            !isMenuSelected,
-                            () => setState(() => isMenuSelected = false),
+                          TabButton(
+                            title: "Reviews",
+                            isActive: !isMenuSelected,
+                            onTap: () => setState(() => isMenuSelected = false),
                           ),
                         ],
                       ),
@@ -622,8 +620,21 @@ class _RestaurantDetailScreenState
 
                     // Switchable Content
                     isMenuSelected
-                        ? _buildMenuSection(menuState)
-                        : _buildReviewsSection(reviewState, currentUserId),
+                        ? MenuSection(
+                            state: menuState,
+                            menuItemBuilder: (menu) => MenuItemCard(menu: menu),
+                          )
+                        : ReviewSection(
+                            state: reviewState,
+                            currentUserId: currentUserId,
+                            onEdit: (rev) =>
+                                _openReviewSheet(existingReview: rev),
+                            onDelete: (id) => _confirmDelete(id),
+                            normalizeImageUrl: (url) =>
+                                _normalizeMenuImageUrl(url),
+                            formatDate: (date, {reviewId}) =>
+                                _formatPostedDate(date, reviewId: reviewId),
+                          ),
 
                     const SizedBox(height: 80),
                   ],
@@ -633,344 +644,6 @@ class _RestaurantDetailScreenState
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCircularButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: Colors.black, size: 22),
-      ),
-    );
-  }
-
-  Widget _buildTabButton(String title, bool isActive, VoidCallback onTap) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isActive ? const Color(0xFFE98869) : Colors.transparent,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isActive ? Colors.white : Colors.grey.shade500,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuSection(MenuState state) {
-    if (state.status == MenuStatus.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (state.menus.isEmpty) {
-      return const Center(child: Text("No items available."));
-    }
-
-    final groupedMenus = _groupByCategory(state.menus);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: groupedMenus.entries.map((entry) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              entry.key,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 15),
-            ...entry.value.map((menu) => _buildMenuItemCard(menu)),
-            const SizedBox(height: 20),
-          ],
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildMenuItemCard(MenuEntity menu) {
-    final isAvailable = menu.isAvailable;
-    final normalizedMenuImageUrl = _normalizeMenuImageUrl(menu.imageUrl ?? '');
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE9EDF2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 110,
-            width: double.infinity,
-            child: normalizedMenuImageUrl == null
-                ? Image.asset('assets/images/chiya.png', fit: BoxFit.cover)
-                : Image.network(
-                    normalizedMenuImageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Image.asset(
-                      'assets/images/chiya.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        menu.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF0D223F),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isAvailable
-                            ? const Color(0xFFD7F2E1)
-                            : const Color(0xFFF3E4E0),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        isAvailable ? 'Available' : 'Unavailable',
-                        style: TextStyle(
-                          color: isAvailable
-                              ? const Color(0xFF149F59)
-                              : const Color(0xFFC46547),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  (menu.description?.trim().isNotEmpty == true)
-                      ? menu.description!
-                      : 'No description available',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF5F6F85),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Rs ${menu.price.toInt()}',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFE7744F),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReviewsSection(ReviewState state, String? currentUserId) {
-    if (state.status == ReviewStatus.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (state.reviews.isEmpty) {
-      return const Center(child: Text("No reviews yet."));
-    }
-
-    return Column(
-      children: state.reviews.map((review) {
-        final bool isMyReview = review.customerId == currentUserId;
-        final reviewerName = review.customerName?.trim().isNotEmpty == true
-            ? review.customerName!
-            : 'Guest';
-        final reviewerImageUrl = _normalizeMenuImageUrl(
-          review.customerImageUrl ?? '',
-        );
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 20),
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔥 Top Row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Avatar image
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundImage: reviewerImageUrl == null
-                        ? null
-                        : NetworkImage(reviewerImageUrl),
-                    child: reviewerImageUrl == null
-                        ? Text(
-                            reviewerName[0].toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : null,
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  // Name
-                  Expanded(
-                    child: Text(
-                      isMyReview ? 'You' : reviewerName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2A44),
-                      ),
-                    ),
-                  ),
-
-                  // ⭐ Rating badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: const Color(0xFFFFD8C4)),
-                    ),
-                    child: Row(
-                      children: List.generate(
-                        5,
-                        (i) => Icon(
-                          i < review.rating ? Icons.star : Icons.star_border,
-                          size: 18,
-                          color: const Color(0xFFE7744F),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // ✨ Review text
-              Text(
-                '"${review.comment}"',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic,
-                  height: 1.6,
-                  color: Color(0xFF4C586E),
-                ),
-              ),
-
-              const SizedBox(height: 22),
-
-              const Divider(),
-
-              const SizedBox(height: 10),
-
-              // 📅 Date
-              Text(
-                _formatPostedDate(review.createdAt, reviewId: review.reviewId),
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  color: Color(0xFF8E97A8),
-                ),
-              ),
-
-              // Edit/Delete for my review
-              if (isMyReview)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit_outlined,
-                          size: 20,
-                          color: Colors.blue,
-                        ),
-                        onPressed: () =>
-                            _openReviewSheet(existingReview: review),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          size: 20,
-                          color: Colors.red,
-                        ),
-                        onPressed: () => _confirmDelete(review.reviewId!),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 }

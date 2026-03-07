@@ -1,15 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:munch_nearby/features/customer_dashboard/domain/usecases/upload_image_usecase.dart';
-import 'package:munch_nearby/features/customer_dashboard/presentation/state/upload_image_state.dart';
+import 'package:munch_nearby/features/profile/domain/usecases/upload_image_usecase.dart';
+import 'package:munch_nearby/features/profile/presentation/state/upload_image_state.dart';
 
-final uploadImageViewModelProvider = NotifierProvider<UploadImageViewmodel, UploadImageState>(
-  UploadImageViewmodel.new,
-);
+final uploadImageViewModelProvider =
+    NotifierProvider<UploadImageViewmodel, UploadImageState>(
+      UploadImageViewmodel.new,
+    );
 
 class UploadImageViewmodel extends Notifier<UploadImageState> {
-  
   late final UploadImageUsecase _uploadImageUsecase;
 
   @override
@@ -18,19 +18,18 @@ class UploadImageViewmodel extends Notifier<UploadImageState> {
     return const UploadImageState();
   }
 
-  
-  Future<void> uploadPhoto(File photo) async{
+  Future<void> uploadPhoto(File photo) async {
     state = state.copyWith(status: UploadImageStatus.loading);
 
     final result = await _uploadImageUsecase(photo);
     result.fold(
-      (Failure){
+      (Failure) {
         state = state.copyWith(
           status: UploadImageStatus.error,
           errorMessage: Failure.message,
         );
       },
-      (imageName){
+      (imageName) {
         if (imageName.isEmpty) {
           state = state.copyWith(
             status: UploadImageStatus.loaded,
@@ -43,13 +42,11 @@ class UploadImageViewmodel extends Notifier<UploadImageState> {
             errorMessage: null,
           );
         }
-      },);
+      },
+    );
   }
+
   void clearError() {
     state = state.copyWith(errorMessage: null);
   }
-
-  
 }
-
-

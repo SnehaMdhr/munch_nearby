@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
-import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
+import '../../../../core/widgets/bottom_navigation_bar_for_customer.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import '../widgets/my_button.dart';

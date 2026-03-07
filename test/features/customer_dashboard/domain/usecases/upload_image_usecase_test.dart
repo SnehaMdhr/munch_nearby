@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mocktail/mocktail.dart';
 import 'package:munch_nearby/core/error/failure.dart';
-import 'package:munch_nearby/features/customer_dashboard/domain/repositories/upload_image_repository.dart';
-import 'package:munch_nearby/features/customer_dashboard/domain/usecases/upload_image_usecase.dart';
+import 'package:munch_nearby/features/profile/domain/repositories/upload_image_repository.dart';
+import 'package:munch_nearby/features/profile/domain/usecases/upload_image_usecase.dart';
 
 class MockImageRepository extends Mock implements IUploadImageRepository {}
 

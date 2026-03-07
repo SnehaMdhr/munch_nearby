@@ -5,7 +5,7 @@ import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
-import 'package:munch_nearby/features/customer_dashboard/presentation/pages/bottom_screen_customer/map_screen.dart';
+import 'package:munch_nearby/features/map/presentation/pages/map_screen.dart';
 import 'package:munch_nearby/features/restaurant/presentation/pages/restaurant_detail_screen.dart';
 
 class RestaurantCard extends StatelessWidget {

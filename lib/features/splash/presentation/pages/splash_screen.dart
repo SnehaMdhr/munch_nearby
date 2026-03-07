@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
-import 'package:munch_nearby/features/customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
+import 'package:munch_nearby/core/widgets/bottom_navigation_bar_for_customer.dart';
 import 'package:munch_nearby/features/onboarding/presentation/pages/onboarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 
-import '../../../../core/widgets/app_bar_title.dart';
-import '../../../favourite/presentation/pages/favourite_screen.dart';
-import '../../../restaurant/presentation/pages/home_screen.dart';
-import 'bottom_screen_customer/map_screen.dart';
-import 'bottom_screen_customer/profile_screen.dart';
+import 'app_bar_title.dart';
+import '../../features/favourite/presentation/pages/favourite_screen.dart';
+import '../../features/restaurant/presentation/pages/home_screen.dart';
+import '../../features/map/presentation/pages/map_screen.dart';
+import '../../features/profile/presentation/pages/profile_screen.dart';
 
 class BottomNavigationBarForCustomer extends ConsumerStatefulWidget {
   const BottomNavigationBarForCustomer({super.key});
