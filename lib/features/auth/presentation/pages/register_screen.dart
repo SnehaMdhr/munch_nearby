@@ -29,18 +29,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   //   "Customer": "customer",
   //   "Restaurant Owner": "restaurant_owner",
   // };
-  // String? selectedRole; 
+  // String? selectedRole;
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(authViewModelProvider.notifier).register(
-        name: nameController.text.trim(),
-        email: emailController.text.trim(),
-        username: emailController.text.trim().split("@").first,
-        password: passwordController.text.trim(),
-        confirmPassword: confirmPasswordController.text.trim(),
-        // role: roleMap[selectedRole!]!,
-      );
+      await ref
+          .read(authViewModelProvider.notifier)
+          .register(
+            name: nameController.text.trim(),
+            email: emailController.text.trim(),
+            username: emailController.text.trim().split("@").first,
+            password: passwordController.text.trim(),
+            confirmPassword: confirmPasswordController.text.trim(),
+            // role: roleMap[selectedRole!]!,
+          );
     }
   }
 
@@ -58,7 +60,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authViewModelProvider);
     final isLoading = authState.status == AuthStatus.loading;
 
-  
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
@@ -83,27 +84,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 100),
-                const Center(
-                  child: Text(
-                    "MunchNearby",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFE87A5D),
-                    ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Sign ",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFE87A5D),
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Up",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Center(
-                  child: Text(
-                    "Create your Account",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
+                const Text(
+                  "Create your Account",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -131,10 +143,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                   onChanged: (_) {},
                 ),
-                const SizedBox(height: 20),
+                // const SizedBox(height: 20),
 
                 // DropdownButtonFormField<String>(
-                //   value: selectedRole, 
+                //   value: selectedRole,
                 //   decoration: const InputDecoration(
                 //     labelText: 'Select Role',
                 //     prefixIcon: Icon(Icons.person_outline),
@@ -142,7 +154,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 //       borderRadius: BorderRadius.all(Radius.circular(8)),
                 //     ),
                 //   ),
-                //   hint: const Text("Choose your role"), 
+                //   hint: const Text("Choose your role"),
                 //   dropdownColor: const Color(0xFFFEFBF8),
                 //   items: roleMap.keys.map((role) {
                 //     return DropdownMenuItem<String>(
@@ -226,34 +238,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 25),
 
                 Row(
-                  children: const [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text("Or sign in with"),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                Center(
-                  child: InkWell(
-                    onTap: () {
-                      // TODO: integrate Google sign-in
-                    },
-                    child: Image.asset(
-                      "assets/images/google.png",
-                      width: 55,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 25),
-
-                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Have Account?"),
+                    const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
                         AppRoutes.pushReplacement(context, const LoginScreen());

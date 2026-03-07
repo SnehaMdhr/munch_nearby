@@ -26,8 +26,6 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
-
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.otpSent) {
         setState(() => otpSent = true);
@@ -58,36 +56,50 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 120),
-              const Text(
-                "MunchNearby",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFE87A5D),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Password ",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFE87A5D),
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Reset",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                "Forgot Password",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 12),
+
+              const SizedBox(height: 20),
               Text(
                 otpSent
-                    ? "Enter OTP and new password"
-                    : "Enter your identifier to get OTP",
+                    ? "Enter your email to get OTP"
+                    : "Enter OTP and new password",
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey, fontSize: 15),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 15,
+                ),
               ),
               const SizedBox(height: 40),
 
               if (!otpSent)
                 MyTextFormField(
-                  label: "Identifier",
+                  label: "Email",
                   controller: identifierController,
-                  prefixIcon: Icons.person_outline,
+                  prefixIcon: Icons.email_outlined,
                   validator: (value) =>
-                      value!.isEmpty ? "Enter your identifier" : null,
+                      value!.isEmpty ? "Enter your EMail" : null,
                   onChanged: (String value) {},
                 ),
 
