@@ -17,7 +17,7 @@ class ApiEndpoints {
   // For iOS Simulator use: 'http://localhost:5000/api/v1'
   // For Physical Device use your computer's IP: 'http://192.168.x.x:5000/api/v1'
 
-  static const bool isPhysicalDevice = true;
+  static const bool isPhysicalDevice = false;
   static const String compIpAddress = "10.247.30.231";
   static String get baseUrl {
     if (isPhysicalDevice) {
