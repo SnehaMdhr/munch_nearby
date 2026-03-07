@@ -5,7 +5,6 @@ part 'menu_hive_model.g.dart';
 
 @HiveType(typeId: 2)
 class MenuHiveModel extends HiveObject {
-
   @HiveField(0)
   final String id;
 
@@ -27,6 +26,9 @@ class MenuHiveModel extends HiveObject {
   @HiveField(6)
   final String restaurantId;
 
+  @HiveField(7)
+  final String? imageUrl;
+
   MenuHiveModel({
     required this.id,
     required this.name,
@@ -35,6 +37,7 @@ class MenuHiveModel extends HiveObject {
     required this.category,
     required this.isAvailable,
     required this.restaurantId,
+    this.imageUrl,
   });
 
   /// Convert Hive → Entity
@@ -47,6 +50,7 @@ class MenuHiveModel extends HiveObject {
       category: category,
       isAvailable: isAvailable,
       restaurantId: restaurantId,
+      imageUrl: imageUrl,
     );
   }
 
@@ -60,6 +64,7 @@ class MenuHiveModel extends HiveObject {
       category: entity.category,
       isAvailable: entity.isAvailable,
       restaurantId: entity.restaurantId,
+      imageUrl: entity.imageUrl,
     );
   }
 

@@ -8,6 +8,7 @@ class MenuApiModel {
   final String category;
   final bool isAvailable;
   final String restaurant;
+  final String? imageUrl;
 
   MenuApiModel({
     this.id,
@@ -17,6 +18,7 @@ class MenuApiModel {
     required this.category,
     required this.isAvailable,
     required this.restaurant,
+    this.imageUrl,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +29,7 @@ class MenuApiModel {
       "category": category,
       "isAvailable": isAvailable,
       "restaurant": restaurant,
+      "imageUrl": imageUrl,
     };
   }
 
@@ -39,6 +42,7 @@ class MenuApiModel {
       category: json["category"] as String? ?? "",
       isAvailable: json["isAvailable"] as bool? ?? true,
       restaurant: json["restaurant"] as String? ?? "",
+      imageUrl: json["imageUrl"] as String?,
     );
   }
 
@@ -51,9 +55,9 @@ class MenuApiModel {
       category: category,
       isAvailable: isAvailable,
       restaurantId: restaurant,
+      imageUrl: imageUrl,
     );
   }
-
 
   factory MenuApiModel.fromEntity(MenuEntity entity) {
     return MenuApiModel(
@@ -64,11 +68,11 @@ class MenuApiModel {
       category: entity.category,
       isAvailable: entity.isAvailable,
       restaurant: entity.restaurantId,
+      imageUrl: entity.imageUrl,
     );
   }
 
-  static List<MenuEntity> toEntityList(
-      List<MenuApiModel> models) {
+  static List<MenuEntity> toEntityList(List<MenuApiModel> models) {
     return models.map((model) => model.toEntity()).toList();
   }
 }
