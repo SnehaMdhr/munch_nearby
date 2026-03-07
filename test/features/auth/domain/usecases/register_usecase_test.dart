@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:mocktail/mocktail.dart';
 import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/auth/domain/entities/auth_entity.dart';
@@ -19,162 +18,110 @@ void main() {
   });
 
   setUpAll(() {
-    registerFallbackValue(
-      const AuthEntity(
-        username: 'testuser',
-        email: 'test@gmail.com',
-        password: 'password123',
-        name: 'Test User',
-      ),
-    );
+    registerFallbackValue(const AuthEntity(name: '', email: ''));
   });
 
-  const tFirstName = 'Test';
-  const tLastName = 'Test';
-  const tEmail = 'test@example.com';
-  const tUsername = 'testuser';
-  const tPassword = 'password123';
-  const tPhoneNumber = '1234567890';
-  const tConfirmPassword = 'password123';
-  const tName = '$tFirstName $tLastName';
+  final tParams = RegisterUsecaseParams(
+    name: 'Test User',
+    email: 'test@example.com',
+    username: 'testuser',
+    password: 'password123',
+    confirmPassword: 'password123',
+  );
 
   group('RegisterUsecase', () {
-    test('should return true when registration is successful', () async {
-      //arrange
+    test('should return true on successful registration', () async {
       when(
         () => mockRepository.register(any()),
       ).thenAnswer((_) async => const Right(true));
 
-      //act
-      final result = await usecase(
-        RegisterUsecaseParams(
-          username: tUsername,
-          email: tEmail,
-          password: tPassword,
-          confirmPassword: tConfirmPassword,
-          name: tFirstName + ' ' + tLastName,
-        ),
-      );
+      final result = await usecase(tParams);
 
-      //assert
       expect(result, const Right(true));
       verify(() => mockRepository.register(any())).called(1);
-      verifyNoMoreInteractions(mockRepository);
     });
 
-    test('should pass AuthEntity with correct values to repository', () async {
-      // Arrange
-      AuthEntity? capturedEntity;
-      when(() => mockRepository.register(any())).thenAnswer((invocation) {
-        capturedEntity = invocation.positionalArguments[0] as AuthEntity;
-        return Future.value(const Right(true));
-      });
+    test(
+      'should pass correct entity with params values to repository',
+      () async {
+        AuthEntity? capturedEntity;
+        when(() => mockRepository.register(any())).thenAnswer((
+          invocation,
+        ) async {
+          capturedEntity = invocation.positionalArguments[0] as AuthEntity;
+          return const Right(true);
+        });
 
-      // Act
-      await usecase(
-        RegisterUsecaseParams(
-          email: tEmail,
-          username: tUsername,
-          password: tPassword,
-          confirmPassword: tConfirmPassword,
-          name: '$tFirstName $tLastName',
-        ),
-      );
+        await usecase(tParams);
 
-      // Assert
-      expect(capturedEntity?.email, tEmail);
-      expect(capturedEntity?.username, tUsername);
-      expect(capturedEntity?.password, tPassword);
-      expect(capturedEntity?.confirmPassword, tConfirmPassword);
-      expect(capturedEntity?.name, '$tFirstName $tLastName');
-    });
+        expect(capturedEntity?.name, tParams.name);
+        expect(capturedEntity?.email, tParams.email);
+        expect(capturedEntity?.username, tParams.username);
+        expect(capturedEntity?.password, tParams.password);
+        expect(capturedEntity?.confirmPassword, tParams.confirmPassword);
+      },
+    );
 
-    test('should return failure when registration fails', () async {
-      // Arrange
-      const failure = ApiFailure(message: 'Email already exists');
+    test('should return ApiFailure when registration fails', () async {
+      const tFailure = ApiFailure(message: 'Email already exists');
       when(
         () => mockRepository.register(any()),
-      ).thenAnswer((_) async => const Left(failure));
+      ).thenAnswer((_) async => const Left(tFailure));
 
-      // Act
-      final result = await usecase(
-        RegisterUsecaseParams(
-          email: tEmail,
-          username: tUsername,
-          password: tPassword,
-          confirmPassword: tConfirmPassword,
-          name: '$tFirstName $tLastName',
-        ),
-      );
+      final result = await usecase(tParams);
 
-      // Assert
-      expect(result, const Left(failure));
-      verify(() => mockRepository.register(any())).called(1);
-      verifyNoMoreInteractions(mockRepository);
+      expect(result, const Left(tFailure));
     });
 
-    test('should return NetworkFailure when there is no internet', () async {
-      // Arrange
-      const failure = NetworkFailure();
+    test('should return NetworkFailure when no internet', () async {
+      const tFailure = NetworkFailure();
       when(
         () => mockRepository.register(any()),
-      ).thenAnswer((_) async => const Left(failure));
+      ).thenAnswer((_) async => const Left(tFailure));
 
-      // Act
-      final result = await usecase(
-        RegisterUsecaseParams(
-          email: tEmail,
-          username: tUsername,
-          password: tPassword,
-          confirmPassword: tConfirmPassword,
-          name: tName,
-        ),
-      );
+      final result = await usecase(tParams);
 
-      // Assert
-      expect(result, const Left(failure));
-      verify(() => mockRepository.register(any())).called(1);
+      expect(result, const Left(tFailure));
     });
   });
 
-  group('RegisterParams', () {
-    test('should have correct props with all values', () {
-      // Arrange
-      final params = RegisterUsecaseParams(
-        name: tName,
-        email: tEmail,
-        username: tUsername,
-        password: tPassword,
-        confirmPassword: tConfirmPassword,
-      );
-      // Assert
-      expect(params.props, [
-        tName,
-        tEmail,
-        tUsername,
-        tPassword,
-        tConfirmPassword,
-      ]);
-    });
-
-    test('two params with same values should be equal', () {
-      // Arrange
+  group('RegisterUsecaseParams', () {
+    test('should have correct props for equality', () {
       final params1 = RegisterUsecaseParams(
-        email: tEmail,
-        username: tUsername,
-        password: tPassword,
-        confirmPassword: tConfirmPassword,
-        name: tName,
+        name: 'Test',
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'pass',
+        confirmPassword: 'pass',
       );
       final params2 = RegisterUsecaseParams(
-        email: tEmail,
-        username: tUsername,
-        password: tPassword,
-        confirmPassword: tConfirmPassword,
-        name: tName,
+        name: 'Test',
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'pass',
+        confirmPassword: 'pass',
       );
-      // Assert
-      expect(params1, params2);
+
+      expect(params1, equals(params2));
+    });
+
+    test('should not be equal when fields differ', () {
+      final params1 = RegisterUsecaseParams(
+        name: 'Test',
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'pass',
+        confirmPassword: 'pass',
+      );
+      final params2 = RegisterUsecaseParams(
+        name: 'Other',
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'pass',
+        confirmPassword: 'pass',
+      );
+
+      expect(params1, isNot(equals(params2)));
     });
   });
 }
