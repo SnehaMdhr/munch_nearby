@@ -4,11 +4,13 @@ import 'package:munch_nearby/features/restaurant/domain/entities/restaurant_enti
 
 class FavouriteCard extends StatelessWidget {
   final RestaurantEntity restaurant;
+  final double averageRating;
   final VoidCallback onRemove;
 
   const FavouriteCard({
     super.key,
     required this.restaurant,
+    required this.averageRating,
     required this.onRemove,
   });
 
@@ -36,7 +38,6 @@ class FavouriteCard extends StatelessWidget {
 
     return '$origin/uploads/$value';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,7 @@ class FavouriteCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // 2. Info Section
           Expanded(
             child: Padding(
@@ -108,18 +109,40 @@ class FavouriteCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // Location
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                      const Icon(
+                        Icons.location_on,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           restaurant.address,
-                          style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 13,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, size: 14, color: Colors.amber),
+                      const SizedBox(width: 4),
+                      Text(
+                        averageRating.toStringAsFixed(1),
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
