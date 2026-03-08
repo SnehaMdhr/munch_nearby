@@ -219,16 +219,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 onTap: () =>
                     AppRoutes.push(context, const ChangePasswordScreen()),
               ),
-              ProfileItem(
-                icon: Icons.star_border,
-                title: "My Reviews",
-                onTap: () {},
-              ),
-              ProfileItem(
-                icon: Icons.settings,
-                title: "Settings",
-                onTap: () {},
-              ),
+              // ProfileItem(
+              //   icon: Icons.star_border,
+              //   title: "My Reviews",
+              //   onTap: () {},
+              // ),
+              // ProfileItem(
+              //   icon: Icons.settings,
+              //   title: "Settings",
+              //   onTap: () {},
+              // ),
               const Spacer(),
               SizedBox(
                 child: MyButton(

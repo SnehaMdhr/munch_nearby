@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/core/services/storage/user_session_service.dart';
+import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
@@ -62,7 +63,7 @@ class _RestaurantDetailScreenState
         restaurantId: widget.restaurantId,
       );
 
-      /// TILT RIGHT → ADD TO FAVOURITE
+      /// TILT RIGHT ADD TO FAVOURITE
       if (event.y > 2 && !_sensorTriggered) {
         _sensorTriggered = true;
 
@@ -70,13 +71,10 @@ class _RestaurantDetailScreenState
         await favouriteNotifier.loadFavourites();
 
         if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Tilt Right → Added to favourites ❤️")),
-        );
+        SnackbarUtils.showInfo(context, "Tilt Right -> Added to favourites");
       }
 
-      /// TILT LEFT → REMOVE FROM FAVOURITE
+      /// TILT LEFT REMOVE FROM FAVOURITE
       if (event.y < -2 && !_sensorTriggered) {
         _sensorTriggered = true;
 
@@ -84,11 +82,7 @@ class _RestaurantDetailScreenState
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Tilt Left → Removed from favourites ❌"),
-          ),
-        );
+        SnackbarUtils.showInfo(context, "Tilt Left -> Removed from favourites");
       }
 
       /// RESET SENSOR
@@ -237,10 +231,9 @@ class _RestaurantDetailScreenState
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     if (commentController.text.trim().length < 5) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Min 5 characters required"),
-                        ),
+                      SnackbarUtils.showInfo(
+                        context,
+                        "Min 5 characters required",
                       );
                       return;
                     }
@@ -417,9 +410,7 @@ class _RestaurantDetailScreenState
                     final customerId = authState.authEntity?.userId;
 
                     if (customerId == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please login first")),
-                      );
+                      SnackbarUtils.showError(context, "Please Login first");
                       return;
                     }
 

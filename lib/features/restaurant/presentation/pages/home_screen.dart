@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
+import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:munch_nearby/features/restaurant/presentation/view_model/restaurant_view_model.dart';
 import 'package:munch_nearby/features/restaurant/presentation/state/restaurant_state.dart';
@@ -70,12 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final restaurant =
         state.restaurants[random.nextInt(state.restaurants.length)];
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Try: ${restaurant.name}"),
-        duration: const Duration(milliseconds: 700),
-      ),
-    );
+    SnackbarUtils.showInfo(context, 'Try: ${restaurant.name}');
 
     Future.delayed(const Duration(milliseconds: 600), () {
       if (!mounted) return;

@@ -4,6 +4,7 @@ import 'package:munch_nearby/features/auth/presentation/state/auth_state.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/auth/presentation/widgets/my_button.dart';
 import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
+import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -38,20 +39,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
     ref.listen(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.passwordChanged) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Password changed successfully")),
-        );
-
+        SnackbarUtils.showSuccess(context, 'Password changed successfully!');
         Navigator.pop(context);
       }
 
       if (next.status == AuthStatus.error && next.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        SnackbarUtils.showError(context, next.errorMessage!);
       }
     });
-
     return Scaffold(
       appBar: AppBar(
         title: Text(

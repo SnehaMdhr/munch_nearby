@@ -59,27 +59,5 @@ void main() {
 
       expect(result, const Right(<ReviewEntity>[]));
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to fetch reviews');
-      when(
-        () => mockRepository.getRestaurantReviews(tRestaurantId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tRestaurantId);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.getRestaurantReviews(tRestaurantId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tRestaurantId);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

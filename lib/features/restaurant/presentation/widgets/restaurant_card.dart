@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:munch_nearby/app/routes/app_routes.dart';
 import 'package:munch_nearby/core/api/api_endpoints.dart';
+import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
@@ -171,9 +172,7 @@ class RestaurantCard extends StatelessWidget {
                         final customerId = authState.authEntity?.userId;
 
                         if (customerId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please login first")),
-                          );
+                          SnackbarUtils.showInfo(context, "Please Login First");
                           return;
                         }
 

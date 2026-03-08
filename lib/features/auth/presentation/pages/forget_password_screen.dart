@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/core/utils/snackbar_utils.dart';
 import 'package:munch_nearby/features/auth/presentation/state/auth_state.dart';
 import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_model.dart';
 import '../widgets/my_button.dart';
@@ -29,21 +30,15 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
       if (next.status == AuthStatus.otpSent) {
         setState(() => otpSent = true);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('OTP sent successfully!')));
+        SnackbarUtils.showSuccess(context, 'OTP sent successfully!');
       } else if (next.status == AuthStatus.passwordReset) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password reset successfully!')),
-        );
+        SnackbarUtils.showSuccess(context, 'Password reset successfully!');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       } else if (next.status == AuthStatus.error && next.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+        SnackbarUtils.showError(context, next.errorMessage!);
       }
     });
 

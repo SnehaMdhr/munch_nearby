@@ -388,10 +388,9 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                             final userId = state.profile?.userId;
 
                             if (userId == null || userId.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('User profile not loaded'),
-                                ),
+                              SnackbarUtils.showInfo(
+                                context,
+                                'User profile not loaded',
                               );
                               Navigator.pop(context);
                               return;
