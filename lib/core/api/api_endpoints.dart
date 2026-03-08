@@ -18,7 +18,7 @@ class ApiEndpoints {
   // For Physical Device use your computer's IP: 'http://192.168.x.x:5000/api/v1'
 
   static const bool isPhysicalDevice = false;
-  static const String compIpAddress = "10.247.30.231";
+  static const String compIpAddress = "192.168.32.231";
   static String get baseUrl {
     if (isPhysicalDevice) {
       return "http://$compIpAddress:3000/api";

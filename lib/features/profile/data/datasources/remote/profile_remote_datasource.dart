@@ -16,7 +16,7 @@ final profileRemoteDatasourceProvider = Provider<IProfileRemoteDatasource>((
 
 class ProfileRemoteDatasource implements IProfileRemoteDatasource {
   final ApiClient _apiClient;
-  static const List<String> _uploadFieldCandidates = ['image'];
+  static const String _uploadFieldName = 'image';
 
   ProfileRemoteDatasource({required ApiClient apiClient})
     : _apiClient = apiClient;
@@ -67,49 +67,46 @@ class ProfileRemoteDatasource implements IProfileRemoteDatasource {
           ? File(imagePath).uri.pathSegments.last
           : imagePath.split(RegExp(r'[\\/]')).last;
 
-      for (final fieldName in _uploadFieldCandidates) {
-        try {
-          final formData = FormData.fromMap({
-            fieldName: await MultipartFile.fromFile(
-              imagePath,
-              filename: fileName,
-            ),
-          });
+      final formData = FormData.fromMap({
+        _uploadFieldName: await MultipartFile.fromFile(
+          imagePath,
+          filename: fileName,
+        ),
+      });
 
-          final response = await _apiClient.put(
-            ApiEndpoints.updateProfile,
-            data: formData,
-          );
+      final response = await _apiClient.put(
+        ApiEndpoints.updateProfile,
+        data: formData,
+      );
 
-          if (response.data["success"] == true) {
-            final data = response.data;
+      if (response.data["success"] == true) {
+        final data = response.data;
 
-            if (data["profilePicture"] != null) {
-              return data["profilePicture"];
-            }
+        if (data["profilePicture"] != null) {
+          return data["profilePicture"];
+        }
 
-            if (data["data"] != null &&
-                data["data"]["profilePicture"] != null) {
-              return data["data"]["profilePicture"];
-            }
-          }
-        } on DioException catch (e) {
-          final responseBody = e.response?.data?.toString() ?? '';
-          final hasMoreCandidates = fieldName != _uploadFieldCandidates.last;
-          final isLikelyFieldMismatch =
-              responseBody.contains('ENOENT') || e.response?.statusCode == 400;
-          if (hasMoreCandidates && isLikelyFieldMismatch) {
-            continue;
-          }
-
-          rethrow;
+        if (data["data"] != null && data["data"]["profilePicture"] != null) {
+          return data["data"]["profilePicture"];
         }
       }
 
       return null;
     } on DioException catch (e) {
-      e.response?.data;
-      return null;
+      final responseBody = e.response?.data?.toString() ?? '';
+      if (responseBody.contains('ENOENT')) {
+        throw Exception(
+          'Image upload failed on backend: uploads directory/file path is missing (ENOENT).',
+        );
+      }
+
+      final statusCode = e.response?.statusCode;
+      final compactBody = responseBody.length > 220
+          ? '${responseBody.substring(0, 220)}...'
+          : responseBody;
+      throw Exception(
+        'Failed to upload image${statusCode != null ? ' (HTTP $statusCode)' : ''}${compactBody.isNotEmpty ? ': $compactBody' : ''}.',
+      );
     }
   }
 }

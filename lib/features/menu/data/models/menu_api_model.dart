@@ -34,6 +34,13 @@ class MenuApiModel {
   }
 
   factory MenuApiModel.fromJson(Map<String, dynamic> json) {
+    final dynamic imagePayload =
+        json["imageUrl"] ?? json["image"] ?? json["photo"] ?? json["menuImage"];
+
+    final String? resolvedImageUrl = imagePayload is Map<String, dynamic>
+        ? imagePayload["url"]?.toString()
+        : imagePayload?.toString();
+
     return MenuApiModel(
       id: json["id"] as String? ?? json["_id"] as String?,
       name: json["name"] as String? ?? "",
@@ -42,7 +49,7 @@ class MenuApiModel {
       category: json["category"] as String? ?? "",
       isAvailable: json["isAvailable"] as bool? ?? true,
       restaurant: json["restaurant"] as String? ?? "",
-      imageUrl: json["imageUrl"] as String?,
+      imageUrl: resolvedImageUrl,
     );
   }
 

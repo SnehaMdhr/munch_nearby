@@ -23,15 +23,20 @@ class AuthApiModel {
 
   //toJson
   Map<String, dynamic> toJson() {
-    return {
+    final payload = {
       "name": name,
       "email": email,
       // "role": role,
       "username": username,
       "password": password,
       "confirmPassword": confirmPassword,
-      "imageUrl": imageUrl,
     };
+
+    if (imageUrl != null && imageUrl!.trim().isNotEmpty) {
+      payload["imageUrl"] = imageUrl;
+    }
+
+    return payload;
   }
 
   //fromJson

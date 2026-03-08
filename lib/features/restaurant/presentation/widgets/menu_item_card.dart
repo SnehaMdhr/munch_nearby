@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch_nearby/core/api/api_endpoints.dart';
 import 'package:munch_nearby/features/menu/domain/entities/menu_entity.dart';
 
 class MenuItemCard extends StatelessWidget {
@@ -6,12 +7,25 @@ class MenuItemCard extends StatelessWidget {
 
   const MenuItemCard({super.key, required this.menu});
 
-  // Keep the normalization logic here to keep the main screen clean
   String? _normalizeImageUrl(String url) {
-    if (url.isEmpty) return null;
-    if (url.startsWith('http')) return url;
-    // Adjust this base URL to match your backend configuration
-    return 'http://10.0.2.2:3000/$url'.replaceAll('\\', '/');
+    final value = url.trim();
+    if (value.isEmpty || value.toLowerCase() == 'null') return null;
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+
+    final baseUri = Uri.parse(ApiEndpoints.baseUrl);
+    final origin = '${baseUri.scheme}://${baseUri.authority}';
+
+    if (value.startsWith('/')) {
+      return '$origin$value';
+    }
+
+    if (value.startsWith('uploads/')) {
+      return '$origin/$value';
+    }
+
+    return '$origin/uploads/$value';
   }
 
   @override

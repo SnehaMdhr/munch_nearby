@@ -17,7 +17,7 @@ final uploadImageRemoteDatasourceProvider =
 class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
   final ApiClient _apiClient;
   final TokenService _tokenService;
-  static const List<String> _uploadFieldCandidates = ['image'];
+  static const String _uploadFieldName = 'image';
 
   UploadImageRemoteDatasource({
     required ApiClient apiClient,
@@ -43,57 +43,36 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
       '',
     );
 
-    DioException? lastError;
-    for (final fieldName in _uploadFieldCandidates) {
-      try {
-        final formData = FormData.fromMap({
-          fieldName: await MultipartFile.fromFile(
-            image.path,
-            filename: fileName,
-          ),
-        });
+    try {
+      final formData = FormData.fromMap({
+        _uploadFieldName: await MultipartFile.fromFile(
+          image.path,
+          filename: fileName,
+        ),
+      });
 
-        final response = await _apiClient.put(
-          ApiEndpoints.updateProfile,
-          data: formData,
-          options: Options(
-            headers: {
-              if (cleanedToken != null && cleanedToken.isNotEmpty)
-                "Authorization": "Bearer $cleanedToken",
-            },
-          ),
-        );
+      final response = await _apiClient.put(
+        ApiEndpoints.updateProfile,
+        data: formData,
+        options: Options(
+          headers: {
+            if (cleanedToken != null && cleanedToken.isNotEmpty)
+              "Authorization": "Bearer $cleanedToken",
+          },
+        ),
+      );
 
-        final photoName = _extractUploadedPhotoName(response.data);
-        if (photoName != null && photoName.isNotEmpty) {
-          return photoName;
-        }
-
-        if (_isSuccessResponse(response.data)) {
-          return '';
-        }
-
-        throw Exception('Failed to upload image.');
-      } on DioException catch (e) {
-        lastError = e;
-
-        // If backend indicates missing file/path, it may be expecting a
-        // different multipart key. Retry with the next candidate.
-        final responseBody = e.response?.data?.toString() ?? '';
-        final hasMoreCandidates = fieldName != _uploadFieldCandidates.last;
-        final isLikelyFieldMismatch =
-            responseBody.contains('ENOENT') || e.response?.statusCode == 400;
-
-        if (hasMoreCandidates && isLikelyFieldMismatch) {
-          continue;
-        }
-
-        rethrow;
+      final photoName = _extractUploadedPhotoName(response.data);
+      if (photoName != null && photoName.isNotEmpty) {
+        return photoName;
       }
-    }
 
-    if (lastError != null) {
-      final e = lastError;
+      if (_isSuccessResponse(response.data)) {
+        return '';
+      }
+
+      throw Exception('Failed to upload image.');
+    } on DioException catch (e) {
       final responseBody = e.response?.data?.toString() ?? '';
       final apiMessage = _extractApiErrorMessage(e.response?.data);
 
@@ -113,8 +92,6 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
         'Failed to upload image${statusCode != null ? ' (HTTP $statusCode)' : ''}${compactBody.isNotEmpty ? ': $compactBody' : ''}.',
       );
     }
-
-    throw Exception('Failed to upload image.');
   }
 
   String? _extractApiErrorMessage(dynamic data) {
@@ -149,13 +126,21 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
     if (data is! Map<String, dynamic>) return null;
 
     final rawSuccess = data['success'];
-    if (rawSuccess is String && rawSuccess.isNotEmpty) {
+    if (rawSuccess is String &&
+        rawSuccess.isNotEmpty &&
+        rawSuccess.toLowerCase() != 'true' &&
+        rawSuccess.toLowerCase() != 'false') {
       return rawSuccess;
     }
 
     final topLevelProfilePicture = data['profilePicture'];
     if (topLevelProfilePicture is String && topLevelProfilePicture.isNotEmpty) {
-      return topLevelProfilePicture.split('/').last;
+      return topLevelProfilePicture;
+    }
+
+    if (topLevelProfilePicture is Map<String, dynamic>) {
+      final url = topLevelProfilePicture['url']?.toString();
+      if (url != null && url.isNotEmpty) return url;
     }
 
     final topLevelFileName = data['fileName'];
@@ -165,14 +150,24 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
 
     final topLevelImage = data['image'];
     if (topLevelImage is String && topLevelImage.isNotEmpty) {
-      return topLevelImage.split('/').last;
+      return topLevelImage;
+    }
+
+    if (topLevelImage is Map<String, dynamic>) {
+      final url = topLevelImage['url']?.toString();
+      if (url != null && url.isNotEmpty) return url;
     }
 
     final bodyData = data['data'];
     if (bodyData is Map<String, dynamic>) {
       final profilePicture = bodyData['profilePicture'];
       if (profilePicture is String && profilePicture.isNotEmpty) {
-        return profilePicture.split('/').last;
+        return profilePicture;
+      }
+
+      if (profilePicture is Map<String, dynamic>) {
+        final url = profilePicture['url']?.toString();
+        if (url != null && url.isNotEmpty) return url;
       }
 
       final fileName = bodyData['fileName'];
@@ -182,14 +177,24 @@ class UploadImageRemoteDatasource implements IUploadImageRemoteDatasource {
 
       final image = bodyData['image'];
       if (image is String && image.isNotEmpty) {
-        return image.split('/').last;
+        return image;
+      }
+
+      if (image is Map<String, dynamic>) {
+        final url = image['url']?.toString();
+        if (url != null && url.isNotEmpty) return url;
       }
 
       final user = bodyData['user'];
       if (user is Map<String, dynamic>) {
         final userProfilePicture = user['profilePicture'];
         if (userProfilePicture is String && userProfilePicture.isNotEmpty) {
-          return userProfilePicture.split('/').last;
+          return userProfilePicture;
+        }
+
+        if (userProfilePicture is Map<String, dynamic>) {
+          final url = userProfilePicture['url']?.toString();
+          if (url != null && url.isNotEmpty) return url;
         }
       }
     }

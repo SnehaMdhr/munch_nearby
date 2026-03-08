@@ -386,6 +386,13 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             final userId = state.profile?.userId;
+                            final uploadedProfilePicture =
+                                uploadState.uploadPhotoName;
+                            final profilePictureToSave =
+                                (uploadedProfilePicture != null &&
+                                    uploadedProfilePicture.isNotEmpty)
+                                ? uploadedProfilePicture
+                                : state.profile?.profilePicture;
 
                             if (userId == null || userId.isEmpty) {
                               SnackbarUtils.showInfo(
@@ -400,7 +407,7 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfileScreen> {
                               userId: userId,
                               name: nameController.text,
                               email: state.profile?.email,
-                              profilePicture: state.profile?.profilePicture,
+                              profilePicture: profilePictureToSave,
                             );
                           }
                         },
