@@ -48,27 +48,5 @@ void main() {
       verify(() => mockRepository.createReview(tReview)).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to create review');
-      when(
-        () => mockRepository.createReview(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.createReview(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

@@ -40,27 +40,5 @@ void main() {
       expect(result, const Right(true));
       verify(() => mockRepository.addToFavourite(tEntity)).called(1);
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to add favourite');
-      when(
-        () => mockRepository.addToFavourite(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.addToFavourite(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

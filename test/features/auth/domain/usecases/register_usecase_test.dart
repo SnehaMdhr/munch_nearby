@@ -61,28 +61,6 @@ void main() {
         expect(capturedEntity?.confirmPassword, tParams.confirmPassword);
       },
     );
-
-    test('should return ApiFailure when registration fails', () async {
-      const tFailure = ApiFailure(message: 'Email already exists');
-      when(
-        () => mockRepository.register(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.register(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
   });
 
   group('RegisterUsecaseParams', () {

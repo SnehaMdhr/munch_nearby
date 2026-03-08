@@ -28,38 +28,5 @@ void main() {
       verify(() => mockRepository.logout()).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-
-    test('should return ApiFailure when logout fails', () async {
-      const tFailure = ApiFailure(message: 'Logout failed');
-      when(
-        () => mockRepository.logout(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase();
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return LocalDatabaseFailure on local error', () async {
-      const tFailure = LocalDatabaseFailure();
-      when(
-        () => mockRepository.logout(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase();
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.logout(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase();
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

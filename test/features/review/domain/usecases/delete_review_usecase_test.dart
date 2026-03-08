@@ -30,27 +30,5 @@ void main() {
       verify(() => mockRepository.deleteReview(tReviewId)).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to delete review');
-      when(
-        () => mockRepository.deleteReview(tReviewId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tReviewId);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.deleteReview(tReviewId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tReviewId);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

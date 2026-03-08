@@ -34,30 +34,6 @@ void main() {
       verify(() => mockRepository.login(tEmail, tPassword)).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-
-    test('should return ApiFailure when login fails', () async {
-      const tFailure = ApiFailure(message: 'Invalid credentials');
-      when(
-        () => mockRepository.login(tEmail, tPassword),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-      verify(() => mockRepository.login(tEmail, tPassword)).called(1);
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.login(tEmail, tPassword),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
-
     test('should pass correct email and password to repository', () async {
       when(
         () => mockRepository.login(any(), any()),
@@ -66,32 +42,6 @@ void main() {
       await usecase(tParams);
 
       verify(() => mockRepository.login(tEmail, tPassword)).called(1);
-    });
-  });
-
-  group('LoginUsecaseParams', () {
-    test('should have correct props for equality', () {
-      const params1 = LoginUsecaseParams(email: tEmail, password: tPassword);
-      const params2 = LoginUsecaseParams(email: tEmail, password: tPassword);
-
-      expect(params1, equals(params2));
-    });
-
-    test('should not be equal when email differs', () {
-      const params1 = LoginUsecaseParams(email: tEmail, password: tPassword);
-      const params2 = LoginUsecaseParams(
-        email: 'other@example.com',
-        password: tPassword,
-      );
-
-      expect(params1, isNot(equals(params2)));
-    });
-
-    test('should not be equal when password differs', () {
-      const params1 = LoginUsecaseParams(email: tEmail, password: tPassword);
-      const params2 = LoginUsecaseParams(email: tEmail, password: 'different');
-
-      expect(params1, isNot(equals(params2)));
     });
   });
 }

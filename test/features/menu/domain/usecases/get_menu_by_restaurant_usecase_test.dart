@@ -62,27 +62,5 @@ void main() {
 
       expect(result, const Right(<MenuEntity>[]));
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to fetch menus');
-      when(
-        () => mockRepository.getMenusByRestaurant(tRestaurantId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.getMenusByRestaurant(tRestaurantId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tParams);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

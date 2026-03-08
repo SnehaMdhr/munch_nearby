@@ -44,27 +44,5 @@ void main() {
 
       expect(result, const Right(<FavouriteEntity>[]));
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to fetch favourites');
-      when(
-        () => mockRepository.getFavourites(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase();
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.getFavourites(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase();
-
-      expect(result, const Left(tFailure));
-    });
   });
 }

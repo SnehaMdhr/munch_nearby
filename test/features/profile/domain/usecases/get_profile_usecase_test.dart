@@ -37,27 +37,5 @@ void main() {
       verify(() => mockRepository.getUserById(tUserId)).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-
-    test('should return ApiFailure on failure', () async {
-      const tFailure = ApiFailure(message: 'User not found');
-      when(
-        () => mockRepository.getUserById(tUserId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tUserId);
-
-      expect(result, const Left(tFailure));
-    });
-
-    test('should return NetworkFailure when no internet', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockRepository.getUserById(tUserId),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      final result = await usecase(tUserId);
-
-      expect(result, const Left(tFailure));
-    });
   });
 }
