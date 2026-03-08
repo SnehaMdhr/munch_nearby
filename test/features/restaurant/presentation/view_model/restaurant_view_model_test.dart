@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/restaurant/domain/entities/restaurant_entity.dart';
 import 'package:munch_nearby/features/restaurant/domain/usecases/get_restaurants_usecase.dart';
 import 'package:munch_nearby/features/restaurant/presentation/state/restaurant_state.dart';

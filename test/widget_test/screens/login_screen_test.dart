@@ -23,18 +23,6 @@ void main() {
     mockAuthViewModel = MockAuthViewModel();
   });
 
-  Widget buildWidget() {
-    return ProviderScope(
-      overrides: [
-        authViewModelProvider.overrideWith(() => mockAuthViewModel),
-        sharedPreferencesProvider.overrideWith((ref) {
-          throw UnimplementedError();
-        }),
-      ],
-      child: const MaterialApp(home: LoginScreen()),
-    );
-  }
-
   Future<Widget> buildWidgetWithPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     return ProviderScope(

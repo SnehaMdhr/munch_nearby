@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/domain/usecases/add_to_favourite_usecase.dart';
 import 'package:munch_nearby/features/favourite/domain/usecases/get_favourites_usecase.dart';

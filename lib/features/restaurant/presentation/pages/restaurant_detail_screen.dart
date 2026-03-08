@@ -9,8 +9,6 @@ import 'package:munch_nearby/features/auth/presentation/view_model/auth_view_mod
 import 'package:munch_nearby/features/auth/presentation/widgets/my_text_form_field.dart';
 import 'package:munch_nearby/features/favourite/domain/entities/favourite_entity.dart';
 import 'package:munch_nearby/features/favourite/presentation/view_model/favourite_view_model.dart';
-import 'package:munch_nearby/features/menu/domain/entities/menu_entity.dart';
-import 'package:munch_nearby/features/menu/presentation/state/menu_state.dart';
 import 'package:munch_nearby/features/menu/presentation/view_model/menu_view_model.dart';
 import 'package:munch_nearby/features/restaurant/presentation/view_model/restaurant_view_model.dart';
 import 'package:munch_nearby/features/restaurant/presentation/widgets/favourite_toggle_button.dart';
@@ -19,10 +17,8 @@ import 'package:munch_nearby/features/restaurant/presentation/widgets/menu_secti
 import 'package:munch_nearby/features/restaurant/presentation/widgets/review_section.dart';
 import 'package:munch_nearby/features/restaurant/presentation/widgets/tab_button.dart';
 import 'package:munch_nearby/features/review/domain/entities/review_entity.dart';
-import 'package:munch_nearby/features/review/presentation/state/review_state.dart';
 import 'package:munch_nearby/features/review/presentation/view_model/review_view_model.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'dart:async';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String restaurantId;
@@ -38,16 +34,6 @@ class _RestaurantDetailScreenState
   StreamSubscription<GyroscopeEvent>? _gyroscpoeEventSubscription;
   bool _sensorTriggered = false;
   bool isMenuSelected = true;
-
-  // Some devices report proximity as binary (0/1), others as distance values.
-  // Treat only 0 or 1 as "near" for binary sensors and small positive values
-  // as near for distance-based sensors.
-  bool _isNearFromSensorValue(int event) {
-    if (event == 0 || event == 1) {
-      return event == 0;
-    }
-    return event > 0 && event < 4;
-  }
 
   void _startGyroscopeSensor() {
     _gyroscpoeEventSubscription = gyroscopeEvents.listen((event) async {
@@ -314,17 +300,6 @@ class _RestaurantDetailScreenState
         ],
       ),
     );
-  }
-
-  Map<String, List<MenuEntity>> _groupByCategory(List<MenuEntity> menus) {
-    final Map<String, List<MenuEntity>> map = {};
-    for (var menu in menus) {
-      if (!map.containsKey(menu.category)) {
-        map[menu.category] = [];
-      }
-      map[menu.category]!.add(menu);
-    }
-    return map;
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/review/domain/repositories/review_repository.dart';
 import 'package:munch_nearby/features/review/domain/usecases/delete_review_usecase.dart';
 

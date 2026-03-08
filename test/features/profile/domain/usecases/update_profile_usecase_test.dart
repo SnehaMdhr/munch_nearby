@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/profile/domain/entities/profile_entity.dart';
 import 'package:munch_nearby/features/profile/domain/repositories/profile_repository.dart';
 import 'package:munch_nearby/features/profile/domain/usecases/update_profile_usecase.dart';
