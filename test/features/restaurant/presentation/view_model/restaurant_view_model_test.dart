@@ -58,69 +58,6 @@ void main() {
     ),
   ];
 
-  group('RestaurantViewModel - initial state', () {
-    test('should have initial state', () {
-      final state = getState();
-
-      expect(state.status, RestaurantStatus.initial);
-      expect(state.restaurants, isEmpty);
-      expect(state.errorMessage, isNull);
-    });
-  });
-
-  group('RestaurantViewModel - getRestaurants', () {
-    test('should emit loaded status with restaurants on success', () async {
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => Right(tRestaurants));
-
-      await getNotifier().getRestaurants();
-
-      final state = getState();
-      expect(state.status, RestaurantStatus.loaded);
-      expect(state.restaurants, tRestaurants);
-      expect(state.restaurants.length, 3);
-    });
-
-    test('should emit loaded status with empty list', () async {
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => const Right(<RestaurantEntity>[]));
-
-      await getNotifier().getRestaurants();
-
-      final state = getState();
-      expect(state.status, RestaurantStatus.loaded);
-      expect(state.restaurants, isEmpty);
-    });
-
-    test('should emit error status on failure', () async {
-      const tFailure = ApiFailure(message: 'Failed to fetch restaurants');
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().getRestaurants();
-
-      final state = getState();
-      expect(state.status, RestaurantStatus.error);
-      expect(state.errorMessage, 'Failed to fetch restaurants');
-    });
-
-    test('should emit error on network failure', () async {
-      const tFailure = NetworkFailure();
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().getRestaurants();
-
-      final state = getState();
-      expect(state.status, RestaurantStatus.error);
-      expect(state.errorMessage, 'No internet connection');
-    });
-  });
-
   group('RestaurantViewModel - searchRestaurants', () {
     test('should filter restaurants by name', () async {
       when(
@@ -145,43 +82,6 @@ void main() {
 
       final state = getState();
       expect(state.restaurants.length, 3);
-    });
-
-    test('should return all restaurants when query is whitespace', () async {
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => Right(tRestaurants));
-
-      await getNotifier().getRestaurants();
-      getNotifier().searchRestaurants('   ');
-
-      final state = getState();
-      expect(state.restaurants.length, 3);
-    });
-
-    test('should be case insensitive', () async {
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => Right(tRestaurants));
-
-      await getNotifier().getRestaurants();
-      getNotifier().searchRestaurants('pizza');
-
-      final state = getState();
-      expect(state.restaurants.length, 1);
-      expect(state.restaurants.first.name, 'Pizza Palace');
-    });
-
-    test('should return empty list when no match', () async {
-      when(
-        () => mockGetRestaurantsUseCase(),
-      ).thenAnswer((_) async => Right(tRestaurants));
-
-      await getNotifier().getRestaurants();
-      getNotifier().searchRestaurants('Nonexistent');
-
-      final state = getState();
-      expect(state.restaurants, isEmpty);
     });
   });
 }

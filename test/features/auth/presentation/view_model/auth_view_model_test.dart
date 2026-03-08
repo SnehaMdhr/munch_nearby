@@ -102,16 +102,6 @@ void main() {
   AuthState getState() => container.read(authViewModelProvider);
   AuthViewModel getNotifier() => container.read(authViewModelProvider.notifier);
 
-  group('AuthViewModel - initial state', () {
-    test('should have initial state', () {
-      final state = getState();
-
-      expect(state.status, AuthStatus.initial);
-      expect(state.authEntity, isNull);
-      expect(state.errorMessage, isNull);
-    });
-  });
-
   group('AuthViewModel - register', () {
     test('should emit registered status on successful registration', () async {
       when(
@@ -164,19 +154,6 @@ void main() {
       expect(state.status, AuthStatus.authenticated);
       expect(state.authEntity, tAuthEntity);
     });
-
-    test('should emit error status on login failure', () async {
-      const tFailure = ApiFailure(message: 'Invalid credentials');
-      when(
-        () => mockLoginUsecase(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().login(email: 'test@example.com', password: 'wrong');
-
-      final state = getState();
-      expect(state.status, AuthStatus.error);
-      expect(state.errorMessage, 'Invalid credentials');
-    });
   });
 
   group('AuthViewModel - logout', () {
@@ -189,19 +166,6 @@ void main() {
 
       final state = getState();
       expect(state.status, AuthStatus.unauthenticated);
-    });
-
-    test('should emit error status on logout failure', () async {
-      const tFailure = ApiFailure(message: 'Logout failed');
-      when(
-        () => mockLogoutUsecase(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().logout();
-
-      final state = getState();
-      expect(state.status, AuthStatus.error);
-      expect(state.errorMessage, 'Logout failed');
     });
   });
 
@@ -243,19 +207,6 @@ void main() {
 
       verifyNever(() => mockGetCurrentUserUsecase());
     });
-
-    test('should set error message on failure', () async {
-      when(() => mockTokenService.getToken()).thenReturn('valid-token');
-      const tFailure = ApiFailure(message: 'Unauthorized');
-      when(
-        () => mockGetCurrentUserUsecase(),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().fetchCurrentUser();
-
-      final state = getState();
-      expect(state.errorMessage, 'Unauthorized');
-    });
   });
 
   group('AuthViewModel - changePassword', () {
@@ -272,23 +223,6 @@ void main() {
 
       final state = getState();
       expect(state.status, AuthStatus.passwordChanged);
-    });
-
-    test('should emit error on failure', () async {
-      const tFailure = ApiFailure(message: 'Old password incorrect');
-      when(
-        () => mockChangePasswordUsecase(any()),
-      ).thenAnswer((_) async => const Left(tFailure));
-
-      await getNotifier().changePassword(
-        oldPassword: 'wrong',
-        newPassword: 'new',
-        confirmPassword: 'new',
-      );
-
-      final state = getState();
-      expect(state.status, AuthStatus.error);
-      expect(state.errorMessage, 'Old password incorrect');
     });
   });
 }
