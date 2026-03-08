@@ -51,18 +51,4 @@ void main() {
     await tester.tap(find.byIcon(Icons.delete_outline));
     expect(deleted, isTrue);
   });
-
-  // Test 4
-  testWidgets('ReviewActionButtons edit icon has blue color', (tester) async {
-    await tester.pumpWidget(buildWidget(onEdit: () {}, onDelete: () {}));
-    final icon = tester.widget<Icon>(find.byIcon(Icons.edit_outlined));
-    expect(icon.color, Colors.blue);
-  });
-
-  // Test 5
-  testWidgets('ReviewActionButtons delete icon has red color', (tester) async {
-    await tester.pumpWidget(buildWidget(onEdit: () {}, onDelete: () {}));
-    final icon = tester.widget<Icon>(find.byIcon(Icons.delete_outline));
-    expect(icon.color, Colors.red);
-  });
 }

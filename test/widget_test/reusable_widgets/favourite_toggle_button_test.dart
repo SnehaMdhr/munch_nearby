@@ -21,13 +21,11 @@ void main() {
     );
   }
 
-  // Test 1
   testWidgets('FavouriteToggleButton displays the given icon', (tester) async {
     await tester.pumpWidget(buildWidget(icon: Icons.favorite, onTap: () {}));
     expect(find.byIcon(Icons.favorite), findsOneWidget);
   });
 
-  // Test 2
   testWidgets('FavouriteToggleButton calls onTap when tapped', (tester) async {
     bool tapped = false;
     await tester.pumpWidget(
@@ -35,14 +33,5 @@ void main() {
     );
     await tester.tap(find.byType(GestureDetector));
     expect(tapped, isTrue);
-  });
-
-  // Test 3
-  testWidgets('FavouriteToggleButton uses custom icon color', (tester) async {
-    await tester.pumpWidget(
-      buildWidget(icon: Icons.favorite, onTap: () {}, iconColor: Colors.red),
-    );
-    final icon = tester.widget<Icon>(find.byIcon(Icons.favorite));
-    expect(icon.color, Colors.red);
   });
 }

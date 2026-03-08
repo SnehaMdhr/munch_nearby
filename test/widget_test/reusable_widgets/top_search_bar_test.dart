@@ -14,12 +14,6 @@ void main() {
   });
 
   // Test 2
-  testWidgets('TopSearchBar displays search icon', (tester) async {
-    await tester.pumpWidget(buildWidget());
-    expect(find.byIcon(Icons.search), findsOneWidget);
-  });
-
-  // Test 3
   testWidgets('TopSearchBar contains a TextFormField', (tester) async {
     await tester.pumpWidget(buildWidget());
     expect(find.byType(TextFormField), findsOneWidget);

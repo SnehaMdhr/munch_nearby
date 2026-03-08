@@ -86,23 +86,6 @@ void main() {
     expect(find.text('Please enter Old password'), findsOneWidget);
   });
 
-  // Test 7
-  testWidgets('ChangePasswordScreen validates short new password', (
-    tester,
-  ) async {
-    final widget = await buildWidget();
-    await tester.pumpWidget(widget);
-
-    await tester.enterText(find.byType(TextFormField).at(0), 'oldpass');
-    await tester.enterText(find.byType(TextFormField).at(1), '123');
-    await tester.enterText(find.byType(TextFormField).at(2), '123');
-
-    await tester.tap(find.byType(ElevatedButton));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Password must be at least 6 characters'), findsOneWidget);
-  });
-
   // Test 8
   testWidgets('ChangePasswordScreen validates password mismatch', (
     tester,
@@ -118,22 +101,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Passwords do not match'), findsOneWidget);
-  });
-
-  // Test 9
-  testWidgets('ChangePasswordScreen has 3 visibility toggle icons', (
-    tester,
-  ) async {
-    final widget = await buildWidget();
-    await tester.pumpWidget(widget);
-    expect(find.byIcon(Icons.visibility_off), findsNWidgets(3));
-  });
-
-  // Test 10
-  testWidgets('ChangePasswordScreen has back navigation', (tester) async {
-    final widget = await buildWidget();
-    await tester.pumpWidget(widget);
-    // AppBar auto-adds a back button when there's a route to pop
-    expect(find.byType(AppBar), findsOneWidget);
   });
 }

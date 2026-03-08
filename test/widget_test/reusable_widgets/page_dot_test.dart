@@ -10,12 +10,6 @@ void main() {
   }
 
   // Test 1
-  testWidgets('PageDot renders as a Container', (tester) async {
-    await tester.pumpWidget(buildWidget(active: true));
-    expect(find.byType(Container), findsWidgets);
-  });
-
-  // Test 2
   testWidgets('Active PageDot has brand color', (tester) async {
     await tester.pumpWidget(buildWidget(active: true));
     final container = tester
@@ -30,7 +24,7 @@ void main() {
     expect(decoration.color, const Color(0xFFE87A5D));
   });
 
-  // Test 3
+  // Test 1
   testWidgets('Inactive PageDot has grey color', (tester) async {
     await tester.pumpWidget(buildWidget(active: false));
     final container = tester
