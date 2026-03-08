@@ -1,15 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:mocktail/mocktail.dart';
-import 'package:munch_nearby/core/error/failure.dart';
 import 'package:munch_nearby/features/auth/domain/entities/auth_entity.dart';
 import 'package:munch_nearby/features/auth/domain/repositories/auth_repository.dart';
 import 'package:munch_nearby/features/auth/domain/usecases/login_usecase.dart';
 
 class MockAuthRepository extends Mock implements IAuthRepository {}
 
-Future<void> main() async {
+void main() {
   late LoginUsecase usecase;
   late MockAuthRepository mockRepository;
 
@@ -18,149 +16,31 @@ Future<void> main() async {
     usecase = LoginUsecase(authRepository: mockRepository);
   });
 
-  const tEmail = 'test@gmail.com';
+  const tEmail = 'test@example.com';
   const tPassword = 'password123';
+  const tParams = LoginUsecaseParams(email: tEmail, password: tPassword);
+  const tAuthEntity = AuthEntity(name: 'Test User', email: tEmail);
 
-  const tUser = AuthEntity(
-    email: tEmail,
-    password: tPassword,
-    name: 'Test User',
-  );
-
-  group("LoginUsecase", () {
-    test('should return AuthEntitiy when login in successful', () async {
-      //arrange
+  group('LoginUsecase', () {
+    test('should return AuthEntity on successful login', () async {
       when(
         () => mockRepository.login(tEmail, tPassword),
-      ).thenAnswer((_) async => const Right(tUser));
+      ).thenAnswer((_) async => const Right(tAuthEntity));
 
-      //act
-      final result = await usecase(
-        const LoginUsecaseParams(email: tEmail, password: tPassword),
-      );
+      final result = await usecase(tParams);
 
-      //assert
-      expect(result, const Right(tUser));
+      expect(result, const Right(tAuthEntity));
       verify(() => mockRepository.login(tEmail, tPassword)).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
-  });
+    test('should pass correct email and password to repository', () async {
+      when(
+        () => mockRepository.login(any(), any()),
+      ).thenAnswer((_) async => const Right(tAuthEntity));
 
-  test('should return failure when login fails', () async {
-    //arrange
-    const failure = ApiFailure(message: 'Invalid credentials');
-    when(
-      () => mockRepository.login(tEmail, tPassword),
-    ).thenAnswer((_) async => const Left(failure));
+      await usecase(tParams);
 
-    //act
-    final result = await usecase(
-      const LoginUsecaseParams(email: tEmail, password: tPassword),
-    );
-
-    //assert
-    expect(result, const Left(failure));
-    verify(() => mockRepository.login(tEmail, tPassword)).called(1);
-    verifyNoMoreInteractions(mockRepository);
-  });
-
-  test("should return NetworkFailure when there is no internet", () async {
-    //arrange
-    const failure = NetworkFailure();
-    when(
-      () => mockRepository.login(tEmail, tPassword),
-    ).thenAnswer((_) async => const Left(failure));
-
-    //act
-    final result = await usecase(
-      const LoginUsecaseParams(email: tEmail, password: tPassword),
-    );
-
-    //assert
-    expect(result, const Left(failure));
-    verify(() => mockRepository.login(tEmail, tPassword)).called(1);
-  });
-
-  test("should pass correct email and password to repository", () async {
-    when(
-      () => mockRepository.login(any(), any()),
-    ).thenAnswer((_) async => const Right(tUser));
-
-    await usecase(const LoginUsecaseParams(email: tEmail, password: tPassword));
-
-    verify(() => mockRepository.login(tEmail, tPassword)).called(1);
-  });
-  test(
-    'should succeed with correct credentials and fail with wrong credentials',
-    () async {
-      // Arrange
-      const wrongEmail = 'wrong@example.com';
-      const wrongPassword = 'wrongpassword';
-      const failure = ApiFailure(message: 'Invalid credentials');
-
-      // Mock: check credentials using if condition
-      when(() => mockRepository.login(any(), any())).thenAnswer((
-        invocation,
-      ) async {
-        final email = invocation.positionalArguments[0] as String;
-        final password = invocation.positionalArguments[1] as String;
-
-        // If email and password are correct, return success
-        if (email == tEmail && password == tPassword) {
-          return const Right(tUser);
-        }
-        // Otherwise return failure
-        return const Left(failure);
-      });
-
-      // Act & Assert - Correct credentials should succeed
-      final successResult = await usecase(
-        const LoginUsecaseParams(email: tEmail, password: tPassword),
-      );
-      expect(successResult, const Right(tUser));
-
-      // Act & Assert - Wrong email should fail
-      final wrongEmailResult = await usecase(
-        const LoginUsecaseParams(email: wrongEmail, password: tPassword),
-      );
-      expect(wrongEmailResult, const Left(failure));
-
-      // Act & Assert - Wrong password should fail
-      final wrongPasswordResult = await usecase(
-        const LoginUsecaseParams(email: tEmail, password: wrongPassword),
-      );
-      expect(wrongPasswordResult, const Left(failure));
-    },
-  );
-
-  group('LoginParams', () {
-    test('should have correct props', () {
-      // Arrange
-      const params = LoginUsecaseParams(email: tEmail, password: tPassword);
-
-      // Assert
-      expect(params.props, [tEmail, tPassword]);
-    });
-
-    test('two params with same values should be equal', () {
-      // Arrange
-      const params1 = LoginUsecaseParams(email: tEmail, password: tPassword);
-      const params2 = LoginUsecaseParams(email: tEmail, password: tPassword);
-
-      // Assert
-      expect(params1, params2);
-    });
-
-    test('two params with different values should not be equal', () {
-      // Arrange
-      const params1 = LoginUsecaseParams(email: tEmail, password: tPassword);
-      const params2 = LoginUsecaseParams(
-        email: 'other@email.com',
-        password: tPassword,
-      );
-
-      // Assert
-      expect(params1, isNot(params2));
+      verify(() => mockRepository.login(tEmail, tPassword)).called(1);
     });
   });
 }

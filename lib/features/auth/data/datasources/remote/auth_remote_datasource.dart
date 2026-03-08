@@ -8,14 +8,13 @@ import 'package:munch_nearby/features/auth/data/models/auth_api_model.dart';
 
 final authRemoteDatasourceProvider = Provider<IAuthRemoteDatasource>((ref) {
   return AuthRemoteDatasource(
-    apiClient: ref.read(apiClientProvider), 
+    apiClient: ref.read(apiClientProvider),
     userSessionService: ref.read(userSessionServiceProvider),
     tokenService: ref.read(tokenServiceProvider),
   );
 });
 
-class AuthRemoteDatasource implements IAuthRemoteDatasource{
-
+class AuthRemoteDatasource implements IAuthRemoteDatasource {
   final ApiClient _apiClient;
   final UserSessionService _userSessionService;
   final TokenService _tokenService;
@@ -23,69 +22,168 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource{
     required ApiClient apiClient,
     required UserSessionService userSessionService,
     required TokenService tokenService,
-  }): _apiClient = apiClient,
-      _userSessionService = userSessionService,
-      _tokenService = tokenService;
-      
-        @override
-        Future<bool> isEmailExists(String email) {
-          // TODO: implement isEmailExists
-          throw UnimplementedError();
-        }
-      
-        @override
-        Future<AuthApiModel?> login(String email, String password) async {
-          final response = await _apiClient.post(
-              ApiEndpoints.userLogin,
-              data: {"email": email, "password": password},
-            );
+  }) : _apiClient = apiClient,
+       _userSessionService = userSessionService,
+       _tokenService = tokenService;
 
-            if(response.data["success"]== true){
-              final data = response.data["data"] as Map<String, dynamic>;
-              final user = AuthApiModel.fromJson(data);
+  @override
+  Future<bool> isEmailExists(String email) {
+    // TODO: implement isEmailExists
+    throw UnimplementedError();
+  }
 
-              //save the session
-              if (user.id != null) {
-                await _userSessionService.saveUserSession(
-                    userId: user.id!,
-                    email: user.email,
-                    name: user.name,
-                    username: user.username,
-                    // role: user.role,
-                );
-              } else {
-                // Handle the case where user.id is null
-              }
-              final token = response.data["token"] as String?;
-              await _tokenService.saveToken(token!);
-              return user; 
-            }
-            return null;
-        }
-        
-          @override
-          Future<AuthApiModel?> register(AuthApiModel model) async {
-            final response = await _apiClient.post(
-              ApiEndpoints.userRegister,
-              data: model.toJson(),
-            );
-            if(response.data["success"]==true){
-              final data = response.data["data"] as Map<String, dynamic>;
-              final registeredUser = AuthApiModel.fromJson(data);
-              return registeredUser;
-            }
-            return model;
-          }
-          
-            @override
-            Future<AuthApiModel?> getCurrentUser() async{
-              final response = await _apiClient.get(ApiEndpoints.getCurrentUser);
-                if (response.data == null) {
-                  return null;
-                }
-                final user = AuthApiModel.fromJson(response.data);
-                return user;
-            }
-        
-          
+  @override
+  Future<AuthApiModel?> login(String email, String password) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.userLogin,
+      data: {"email": email, "password": password},
+    );
+
+    if (response.data["success"] == true) {
+      final data = response.data["data"] as Map<String, dynamic>;
+      final user = AuthApiModel.fromJson(data);
+
+      //save the session
+      if (user.id != null) {
+        await _userSessionService.saveUserSession(
+          userId: user.id!,
+          email: user.email,
+          name: user.name,
+          username: user.username,
+          profilePicture: user.imageUrl,
+        );
+      } else {
+        // Handle the case where user.id is null
+      }
+      final token = response.data["token"] as String?;
+      await _tokenService.saveToken(token!);
+      return user;
+    }
+    return null;
+  }
+
+  @override
+  Future<AuthApiModel?> register(AuthApiModel model) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.userRegister,
+      data: model.toJson(),
+    );
+    if (response.data["success"] == true) {
+      final data = response.data["data"] as Map<String, dynamic>;
+      final registeredUser = AuthApiModel.fromJson(data);
+      return registeredUser;
+    }
+    return model;
+  }
+
+  @override
+  Future<AuthApiModel?> getCurrentUser() async {
+    final response = await _apiClient.get(ApiEndpoints.getCurrentUser);
+    if (response.data == null) {
+      return null;
+    }
+
+    final payload = response.data;
+
+    if (payload is Map<String, dynamic>) {
+      if (payload['data'] is Map<String, dynamic>) {
+        return AuthApiModel.fromJson(payload['data'] as Map<String, dynamic>);
+      }
+      return AuthApiModel.fromJson(payload);
+    }
+
+    return null;
+  }
+
+  @override
+  Future<AuthApiModel?> loginWithGoogle(String idToken) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.googleLogin, // create this endpoint
+      data: {"token": idToken},
+    );
+
+    if (response.data["success"] == true) {
+      final data = response.data["data"] as Map<String, dynamic>;
+      final user = AuthApiModel.fromJson(data);
+
+      if (user.id != null) {
+        await _userSessionService.saveUserSession(
+          userId: user.id!,
+          email: user.email,
+          name: user.name,
+          username: user.username,
+          profilePicture: user.imageUrl,
+        );
+      }
+
+      final token = response.data["token"] as String?;
+      if (token != null) {
+        await _tokenService.saveToken(token);
+      }
+
+      return user;
+    }
+
+    return null;
+  }
+
+  @override
+  Future<bool> requestPasswordReset(String email) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.requestPasswordReset,
+      data: {"email": email},
+    );
+
+    if (response.data["success"] == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> resetPassword({
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+    String? email,
+  }) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.resetPassword,
+      data: {
+        "otp": otp,
+        "newPassword": newPassword,
+        "confirmPassword": confirmPassword,
+        if (email != null) "email": email,
+      },
+    );
+
+    if (response.data["success"] == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.changePassword,
+      data: {
+        "oldPassword": oldPassword,
+        "newPassword": newPassword,
+        "confirmPassword": confirmPassword,
+      },
+    );
+
+    if (response.data["success"] == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

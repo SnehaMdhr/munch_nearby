@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-ThemeData getApplicationTheme(){
+ThemeData getApplicationTheme() {
   return ThemeData(
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: const Color(0xFFFFF6F1),
     fontFamily: "PlusJakarta Regular",
     useMaterial3: true,
 
@@ -15,21 +15,17 @@ ThemeData getApplicationTheme(){
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFE87A5D),
-        foregroundColor: Colors.white,
-        disabledBackgroundColor: const Color(0xFFE87A5D),
-        disabledForegroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 14,
-        ),
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        disabledBackgroundColor: Colors.transparent,
+        disabledForegroundColor: Colors.white.withOpacity(0.5),
+        padding: EdgeInsets.zero,
         minimumSize: const Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
     ),
@@ -42,34 +38,23 @@ ThemeData getApplicationTheme(){
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Color(0xFFEAE3E0),
-          width: 1.4,
-        ),
+        borderSide: const BorderSide(color: Color(0xFFEAE3E0), width: 1.4),
       ),
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Color(0xFFE87A5D),
-          width: 1.8,
-        ),
+        borderSide: const BorderSide(color: Color(0xFFE87A5D), width: 1.8),
       ),
 
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Colors.red,
-        ),
+        borderSide: const BorderSide(color: Colors.red),
       ),
 
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Colors.red,
-        ),
+        borderSide: const BorderSide(color: Colors.red),
       ),
     ),
-
   );
 }

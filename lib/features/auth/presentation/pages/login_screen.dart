@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:munch_nearby/app/routes/app_routes.dart';
+import 'package:munch_nearby/core/services/storage/user_session_service.dart';
 import 'package:munch_nearby/features/auth/presentation/pages/register_screen.dart';
-import '../../../customer_dashboard/presentation/pages/bottom_navigation_bar_for_customer.dart';
+import '../../../../core/widgets/bottom_navigation_bar_for_customer.dart';
 import '../state/auth_state.dart';
 import '../view_model/auth_view_model.dart';
 import '../widgets/my_button.dart';
@@ -24,10 +26,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(authViewModelProvider.notifier).login(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      await ref
+          .read(authViewModelProvider.notifier)
+          .login(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
     }
   }
 
@@ -71,30 +75,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     //   }
     // });
 
-    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) async {
       if (next.status == AuthStatus.error) {
         SnackbarUtils.showError(
           context,
           next.errorMessage ?? "Login failed",
           duration: const Duration(seconds: 1),
         );
-      } else if (next.status == AuthStatus.authenticated) {
+      } else if (next.status == AuthStatus.authenticated &&
+          next.authEntity != null) {
         SnackbarUtils.showSuccess(
           context,
           "Login successful",
           duration: const Duration(seconds: 1),
         );
 
-        // Always go to Customer Dashboard
-        Navigator.pushReplacement(
+        final user = next.authEntity!;
+
+        // ✅ Save session safely
+        await ref
+            .read(userSessionServiceProvider)
+            .saveUserSession(
+              userId: user.userId ?? '',
+              email: user.email,
+              name: user.name,
+              username: user.username,
+              profilePicture: user.imageUrl,
+            );
+
+        // ✅ Navigate
+        AppRoutes.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const BottomNavigationBarForCustomer(),
-          ),
+          const BottomNavigationBarForCustomer(),
         );
       }
     });
-
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -106,20 +121,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 120),
-                const Text(
-                  "MunchNearby",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFE87A5D),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Welcome ",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFE87A5D), // Welcome color
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Back!",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Back color (change this)
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Welcome Back!",
+                  "Login to your Account",
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -177,16 +207,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.push(
+                      AppRoutes.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const ForgetPasswordScreen(),
-                        ),
+                        const ForgetPasswordScreen(),
                       );
                     },
                     child: const Text(
                       "Forgot Password?",
-                      style: TextStyle(color: Color(0xFFE87A5D)),
+                      style: TextStyle(
+                        color: Color(0xFFE87A5D),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -216,12 +247,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Center(
                   child: InkWell(
                     onTap: () {
-                      // TODO: integrate Google sign-in
+                      ref
+                          .read(authViewModelProvider.notifier)
+                          .loginWithGoogle();
                     },
-                    child: Image.asset(
-                      "assets/images/google.png",
-                      width: 55,
-                    ),
+                    child: Image.asset("assets/images/google.png", width: 55),
                   ),
                 ),
 
@@ -233,11 +263,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Text("Don’t have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
+                        AppRoutes.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
+                          const RegisterScreen(),
                         );
                       },
                       child: const Text(

@@ -8,7 +8,7 @@ class AuthApiModel {
   final String? username;
   final String? password;
   final String? confirmPassword;
-  final String? profilePicture;
+  final String? imageUrl;
 
   AuthApiModel({
     this.id,
@@ -18,65 +18,69 @@ class AuthApiModel {
     this.username,
     this.password,
     this.confirmPassword,
-    this.profilePicture,
+    this.imageUrl,
   });
 
-
   //toJson
-  Map<String, dynamic> toJson(){
-    return{
+  Map<String, dynamic> toJson() {
+    final payload = {
       "name": name,
-      "email":email,
+      "email": email,
       // "role": role,
       "username": username,
       "password": password,
       "confirmPassword": confirmPassword,
-      "profilePicture":profilePicture,
     };
+
+    if (imageUrl != null && imageUrl!.trim().isNotEmpty) {
+      payload["imageUrl"] = imageUrl;
+    }
+
+    return payload;
   }
 
   //fromJson
   factory AuthApiModel.fromJson(Map<String, dynamic> json) {
     return AuthApiModel(
-      id: json["id"] as String?,
+      id: json["id"] as String? ?? json["_id"] as String?,
       name: json["name"] as String? ?? "",
       email: json["email"] as String? ?? "",
       // role: json["role"] as String? ?? "customer",
       username: json["username"] as String?,
-      profilePicture: json["profilePicture"] as String?,
+      imageUrl:
+          json["imageUrl"] as String? ?? json["profilePicture"] as String?,
     );
   }
 
   //toEntity
-  AuthEntity toEntity(){
+  AuthEntity toEntity() {
     return AuthEntity(
       userId: id,
       name: name,
       email: email,
       // role: role,
       username: username,
-      profilePicture: profilePicture,
+      imageUrl: imageUrl,
       password: password,
       confirmPassword: confirmPassword,
     );
   }
 
   //fromEntity
-  factory AuthApiModel.fromEntity(AuthEntity entity){
+  factory AuthApiModel.fromEntity(AuthEntity entity) {
     return AuthApiModel(
       name: entity.name,
       email: entity.email,
       username: entity.username,
       password: entity.password,
       confirmPassword: entity.confirmPassword,
-      profilePicture: entity.profilePicture,
+      imageUrl: entity.imageUrl,
       // role: entity.role,
     );
   }
 
   //toEntityList
-  static List<AuthEntity> toEntityList(List<AuthApiModel> models){
+  static List<AuthEntity> toEntityList(List<AuthApiModel> models) {
     return models.map((model) => model.toEntity()).toList();
   }
-
 }
